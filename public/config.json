@@ -1,31 +1,31 @@
 {
   "scavengerHuntName": "Your Organization",
   "defaultStampImage": "/assets/img/paw-stamp.png",
-  "totalTags": 10,
+  "totalTags": 5,
   "tagPositions": {
-    "tree-house": 1,
-    "2": 2,
-    "3": 3,
-    "sparkle-fountain": 4,
-    "hidden-cave": 5,
-    "6": 6,
-    "7": 7,
-    "8": 8,
-    "9": 9,
-    "10": 10
+    "batcave": 1,
+    "daily-planet": 2,
+    "titans-tower": 3,
+    "fortress-of-solitude": 4,
+    "hall-of-justice": 5
   },
   "tagStamps": {
-    "tree-house": {
-      "name": "Stamp1",
+    "batcave": {
+      "name": "Batcave",
       "image": "/assets/img/paw-circle.png"
     },
-    "sparkle-fountain": {
-      "name": "Stamp2",
+    "daily-planet": {
+      "name": "Daily Planet",
       "image": "/assets/img/paws-circle.png"
     },
-    "hidden-cave": {
-      "name": "Stamp3",
-      "image": "/assets/img/paw-stamp.png"
+    "titans-tower": {
+      "name": "Titans Tower"
+    },
+    "fortress-of-solitude": {
+      "name": "Fortress of Solitude"
+    },
+    "hall-of-justice": {
+      "name": "Hall of Justice"
     }
   },
   "badges": [
