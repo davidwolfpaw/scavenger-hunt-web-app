@@ -1,0 +1,373 @@
+:root {
+  --primary-color: #194f90;
+  --secondary-color: #00aeef;
+  --background-color: #f4f4f9;
+  --text-color: #010101;
+  --red-color: #ff0300;
+  --white-color: #ffffff;
+  --dark-green-color: #419149;
+  --light-green-color: #a5d86c;
+}
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent font size inflation */
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+/* Remove default margin in favour of better control in authored CSS */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin-block-end: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+  color: currentColor;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input,
+button,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Iowan Old Style, Apple Garamond, Baskerville, Times New Roman,
+    Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+  color: var(--primary-color);
+}
+
+h1 {
+  font-size: 2.25rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.container {
+  padding: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.noscript-message {
+  background-color: #fff3f3;
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid #ff8888;
+  color: #a3020b;
+  text-align: center;
+}
+
+/* Header Styles */
+#nav-bar {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  padding: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#nav-bar a {
+  color: var(--white-color);
+  text-decoration: none;
+  padding: 20px 10px;
+  font-weight: 500;
+}
+
+#nav-bar a:hover {
+  text-decoration: underline;
+}
+
+/* Form Styles */
+form {
+  background: var(--white-color);
+  padding: 20px;
+}
+
+form h2 {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+form button {
+  width: 100%;
+  font-size: 1em;
+}
+
+button:hover,
+button:focus {
+  background-color: var(--secondary-color);
+}
+
+/* Login/Register Tabs */
+.tab {
+  cursor: pointer;
+  padding: 10px 20px;
+  margin-right: 5px;
+  display: inline-block;
+  background-color: var(--secondary-color);
+}
+.tab.active {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+.form-container {
+  display: none;
+  border: 4px solid var(--primary-color);
+}
+.form-container.active {
+  display: block;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+
+tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+tr:nth-child(odd) td {
+  background-color: #e6f0fa;
+}
+
+#login-status,
+#register-status {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+#login-status:not(:empty),
+#register-status:not(:empty) {
+  padding: 15px;
+  color: var(--white-color);
+  background-color: var(--secondary-color);
+  margin: 15px;
+  text-align: center;
+}
+
+/* Progress Styles */
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.scan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+
+.scan-item {
+  align-content: center;
+  justify-content: center;
+  display: flex;
+  background-color: var(--white-color);
+  padding: 15px;
+  text-align: center;
+  background-size: 100px;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  width: 100%;
+  height: 140px;
+  filter: opacity(0.5);
+  -webkit-filter: opacity(0.5);
+}
+
+.scan-item.scanned {
+  background-image: none !important;
+  filter: opacity(1);
+  -webkit-filter: opacity(1);
+}
+
+.stamp-image {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.scan-item.scanned .stamp-image {
+  opacity: 1; /* Fully visible when scanned */
+}
+
+.badge-image {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+#user-list tr {
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Tag Styles */
+#tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.tag {
+  border: 2px dashed var(--primary-color);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  #nav-bar h1 {
+    font-size: 1.2em;
+  }
+  #nav-bar {
+    flex-direction: column;
+    gap: 5px;
+  }
+  button {
+    width: auto;
+  }
+}

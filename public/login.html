@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="assets/css/style.css">
+	<script src="assets/js/common.js" defer></script>
+	<script src="assets/js/auth.js" defer></script>
+	<title>Login/Register</title>
+</head>
+<body>
+	<nav id="nav-bar"></nav>
+	<div class="container">
+		<h1>Scavenger Hunt Portal</h1>
+		<noscript>
+			<div class="noscript-message">
+				<p>JavaScript is required to view this page properly. Please enable JavaScript in your browser settings and reload the page.</p>
+			</div>
+		</noscript>
+		<div>
+			<span id="login-tab" class="tab active">Login</span>
+			<span id="register-tab" class="tab">Register</span>
+		</div>
+
+		<div id="login-form-container" class="form-container active">
+			<form id="login-form">
+				<h2>Login</h2>
+				<label for="login-name">Your Name:</label>
+				<input type="text" id="login-name" name="name" required />
+
+				<label for="login-identifier">Unique Identifier:</label>
+				<input type="text" id="login-identifier" name="identifier" required />
+
+				<button type="submit">Login</button>
+			</form>
+			<p id="login-status"></p>
+		</div>
+
+		<div id="register-form-container" class="form-container">
+			<form id="registration-form">
+				<h2>Register</h2>
+				<label for="register-name">Your Name:</label>
+				<input type="text" id="register-name" name="name" required>
+
+				<label for="register-identifier">Unique Identifier:</label>
+				<input type="text" id="register-identifier" name="identifier" required>
+
+				<button type="submit">Register</button>
+			</form>
+			<p id="register-status"></p>
+		</div>
+	</div>
+
+	<script>
+	function showTab(tabName) {
+		const loginTab = document.getElementById('login-tab');
+		const registerTab = document.getElementById('register-tab');
+		const loginFormContainer = document.getElementById('login-form-container');
+		const registerFormContainer = document.getElementById('register-form-container');
+
+		if (tabName === 'register') {
+			registerTab.classList.add('active');
+			loginTab.classList.remove('active');
+			registerFormContainer.classList.add('active');
+			loginFormContainer.classList.remove('active');
+		} else {
+			loginTab.classList.add('active');
+			registerTab.classList.remove('active');
+			loginFormContainer.classList.add('active');
+			registerFormContainer.classList.remove('active');
+		}
+	}
+
+    // Check the URL hash to determine which tab to show
+
+    // Update the URL hash when a tab is clicked
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('login-tab').addEventListener('click', () => {
+            window.location.hash = 'login';
+        });
+        document.getElementById('register-tab').addEventListener('click', () => {
+            window.location.hash = 'register';
+        });
+
+		const hash = window.location.hash.substring(1);
+		if (hash === 'register') {
+			showTab('register');
+		} else {
+			showTab('login');
+		}
+
+		// Add event listeners for tab clicks
+		document.getElementById('login-tab').addEventListener('click', () => showTab('login'));
+		document.getElementById('register-tab').addEventListener('click', () => showTab('register'));
+    });
+
+    // Listen for hash changes to switch tabs
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        if (hash === 'register') {
+            showTab('register');
+        } else {
+            showTab('login');
+        }
+    });
+	</script>
+</body>
+</html>

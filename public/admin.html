@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<script src="assets/js/common.js" defer></script>
+	<script src="assets/js/admin.js" defer></script>
+	<title>Admin View</title>
+</head>
+<body>
+	<nav id="nav-bar"></nav>
+	<div class="container">
+		<h1>Admin Dashboard</h1>
+		<noscript>
+			<div class="noscript-message">
+				<p>JavaScript is required to view this page properly. Please enable JavaScript in your browser settings and reload the page.</p>
+			</div>
+		</noscript>
+		<p id="status" class="loading">Loading users…</p>
+
+		<table id="user-table" style="display:none;">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Identifier</th>
+					<th>Scan Count</th>
+					<th>Complete</th>
+				</tr>
+			</thead>
+			<tbody id="user-list">
+				<!-- User rows will be populated here -->
+			</tbody>
+		</table>
+		<div id="user-details-modal" class="modal">
+			<div class="modal-content">
+				<span class="close-button">&times;</span>
+				<div id="user-details"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
