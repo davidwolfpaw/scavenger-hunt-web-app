@@ -5,7 +5,8 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+	"test": "mocha"
   },
   "keywords": [
     "scavenger",
@@ -24,7 +25,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "chai": "^5.2.0",
+    "mocha": "^11.7.1",
+    "nodemon": "^3.0.3",
+    "supertest": "^7.1.1"
   },
   "engines": {
     "node": ">=14.0.0"
