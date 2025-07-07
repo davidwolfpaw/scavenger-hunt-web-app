@@ -57,11 +57,13 @@ router.post('/scan', (req, res) => {
     if (!identifier || !tagId) return res.status(400).json({ error: 'Identifier and tagId are required' });
 
     db.findUserByIdentifier(identifier, (err, user) => {
-      if (err || !user) return res.status(404).json({ error: 'User not found' });
+      if (err || !user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
 
       db.logScan(user.id, tagId, (err, added) => {
         if (err) return res.status(500).json({ error: 'Failed to log scan' });
-        res.json({ success: true, alreadyScanned: !added });
+          res.json({ success: true, alreadyScanned: !added });
       });
     });
   });

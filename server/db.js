@@ -57,7 +57,10 @@ function registerUser(name, identifier, callback) {
 }
 
 function findUserByIdentifier(identifier, callback) {
-  db.get(`SELECT * FROM users WHERE identifier = ?`, [identifier], callback);
+    db.get(`SELECT * FROM users WHERE identifier = ?`, [identifier], (err, user) => {
+ 	   if (err) return callback(err);
+ 	   callback(null, user);
+    });
 }
 
 function findUsernameByIdentifier(identifier, callback) {

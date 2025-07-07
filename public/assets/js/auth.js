@@ -7,7 +7,6 @@ if (registrationForm) {
 		const name = document.getElementById('register-name').value.trim();
 		const identifier = document.getElementById('register-identifier').value.trim();
 		const status = document.getElementById('register-status');
-		console.log('Registering with identifier:', identifier);
 
 		// Clear previous error message
 		status.textContent = '';

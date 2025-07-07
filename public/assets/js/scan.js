@@ -1,4 +1,3 @@
-// scan.js
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('scan-message')) {
     handleScanPage();
@@ -12,6 +11,14 @@ async function handleScanPage() {
   const nfcStatus = document.getElementById('nfc-status');
 
   if (!msg) return;
+
+  // Check for URL-based scan
+  const urlParams = new URLSearchParams(window.location.search);
+  const tagId = urlParams.get('tag');
+
+  if (tagId) {
+    processTag(tagId);
+  }
 
   // Start QR code scanning
   startScanButton.addEventListener('click', () => {
@@ -71,7 +78,7 @@ function startQrCodeScanner() {
 }
 
 function processTag(tagId) {
-  const identifier = sessionStorage.getItem('userToken');
+  const identifier = sessionStorage.getItem('userIdentifier');
   const msg = document.getElementById('scan-message');
 
   if (!msg) return;
