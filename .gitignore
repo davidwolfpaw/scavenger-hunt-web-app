@@ -24,6 +24,7 @@ screenshots/
 *.log
 *.sql
 *.sqlite
+*.db
 logs
 *.log
 npm-debug.log*

@@ -1,102 +1,114 @@
 document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('adminToken');
   const status = document.getElementById('status');
-  const table = document.getElementById('user-table');
-  const tbody = document.getElementById('user-list');
-  const userDetailsModal = document.getElementById('user-details-modal');
-  const userDetails = document.getElementById('user-details');
-  const closeButton = document.querySelector('.close-button');
+  const viewContent = document.getElementById('view-content');
 
   if (!token) {
     status.textContent = "Admin token not found. Redirecting to login...";
     setTimeout(() => window.location.href = 'login.html', 1000);
   } else {
-    fetch('/admin/users', {
+    document.getElementById('view-by-user').addEventListener('click', () => loadView('user'));
+    document.getElementById('view-by-clue').addEventListener('click', () => loadView('clue'));
+    document.getElementById('view-first-complete').addEventListener('click', () => loadView('firstComplete'));
+  }
+
+  function loadView(viewType) {
+    viewContent.innerHTML = ''; // Clear previous content
+    status.textContent = 'Loading...';
+
+    let url;
+    switch (viewType) {
+      case 'user':
+        url = '/admin/users';
+        break;
+      case 'clue':
+        url = '/admin/scans-by-clue';
+        break;
+      case 'firstComplete':
+        url = '/admin/first-complete';
+        break;
+      default:
+        return;
+    }
+
+    fetch(url, {
       headers: { 'x-admin-token': token }
     })
     .then(res => {
-      if (!res.ok) throw new Error("Unauthorized or error fetching users");
+      if (!res.ok) throw new Error("Error fetching data");
       return res.json();
     })
     .then(data => {
       if (data.success) {
         status.style.display = 'none';
-        table.style.display = 'table';
-
-        data.users.forEach(user => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${user.name}</td>
-            <td>${user.identifier}</td>
-            <td>${user.scan_count}</td>
-            <td>${user.hasScannedAll ? '✔️' : ''}</td>
-          `;
-          row.addEventListener('click', () => fetchUserScans(user.identifier, user.name));
-          tbody.appendChild(row);
-        });
+        renderView(viewType, data);
       } else {
-        status.textContent = "Failed to load user list.";
+        status.textContent = "Failed to load data.";
         status.className = "error";
       }
     })
     .catch(err => {
-      status.textContent = err.message || "Error loading users.";
+      status.textContent = err.message || "Error loading data.";
       status.className = "error";
     });
   }
 
-  closeButton.addEventListener('click', () => {
-    userDetailsModal.style.display = 'none';
-  });
-
-  window.addEventListener('click', (event) => {
-    if (event.target === userDetailsModal) {
-      userDetailsModal.style.display = 'none';
+  function renderView(viewType, data) {
+    switch (viewType) {
+      case 'user':
+        renderUserView(data.users);
+        break;
+      case 'clue':
+        renderClueView(data.clues);
+        break;
+      case 'firstComplete':
+        renderFirstCompleteView(data.firstComplete);
+        break;
     }
-  });
+  }
+
+  function renderUserView(users) {
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Identifier</th>
+          <th>Scan Count</th>
+          <th>Complete</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${users.map(user => `
+          <tr>
+            <td>${user.name}</td>
+            <td>${user.identifier}</td>
+            <td>${user.scan_count}</td>
+            <td>${user.hasScannedAll ? '✔️' : ''}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    `;
+    viewContent.appendChild(table);
+  }
+
+  function renderClueView(clues) {
+    const list = document.createElement('ul');
+    clues.forEach(clue => {
+      const listItem = document.createElement('li');
+      listItem.textContent = `Clue: ${clue.tag_id}, Scans: ${clue.scan_count}`;
+      list.appendChild(listItem);
+    });
+    viewContent.appendChild(list);
+  }
+
+  function renderFirstCompleteView(firstComplete) {
+    const list = document.createElement('ul');
+    firstComplete.forEach(entry => {
+      const listItem = document.createElement('li');
+      listItem.textContent = `User: ${entry.name}, Completed at: ${new Date(entry.timestamp).toLocaleString()}`;
+      list.appendChild(listItem);
+    });
+    viewContent.appendChild(list);
+  }
 });
-
-function fetchUserScans(identifier, name) {
-  const token = sessionStorage.getItem('adminToken');
-  const userDetailsModal = document.getElementById('user-details-modal');
-  const userDetails = document.getElementById('user-details');
-
-  // Clear previous details
-  userDetails.innerHTML = '';
-
-  fetch(`/admin/user/${identifier}/scans`, {
-    headers: { 'x-admin-token': token }
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("Error fetching user scans");
-    return res.json();
-  })
-  .then(data => {
-    if (data.success && data.scans) {
-      // Add user name and identifier above the scans
-      const userInfo = document.createElement('div');
-      userInfo.innerHTML = `<strong>User:</strong> ${name} <br><strong>Identifier:</strong> ${identifier}`;
-      userDetails.appendChild(userInfo);
-
-      if (data.scans.length === 0) {
-        const noScans = document.createElement('div');
-        noScans.textContent = "No scans found for this user.";
-        userDetails.appendChild(noScans);
-      } else {
-        const list = document.createElement('ul');
-        data.scans.forEach(scan => {
-          const listItem = document.createElement('li');
-          listItem.textContent = `Tag: ${scan.tag_id}, Scanned at: ${new Date(scan.timestamp).toLocaleString()}`;
-          list.appendChild(listItem);
-        });
-        userDetails.appendChild(list);
-      }
-    } else {
-      userDetails.textContent = "No scans found for this user.";
-    }
-    userDetailsModal.style.display = 'block';
-  })
-  .catch(err => {
-    userDetails.textContent = err.message || "Error loading user scans.";
-  });
-}

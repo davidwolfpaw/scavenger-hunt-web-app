@@ -95,6 +95,30 @@ function getUserScans(userId, callback) {
   db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ?`, [userId], callback);
 }
 
+function getScansByClue(callback) {
+	const query = `
+		SELECT tag_id, COUNT(user_id) as scan_count
+		FROM scans
+		GROUP BY tag_id
+		ORDER BY scan_count DESC
+	`;
+	db.all(query, [], callback);
+}
+
+function getFirstComplete(callback) {
+	const query = `
+		SELECT u.name, s.timestamp
+		FROM users u
+		JOIN scans s ON u.id = s.user_id
+		GROUP BY u.id
+		HAVING COUNT(s.tag_id) = (SELECT COUNT(*) FROM tags)
+		ORDER BY s.timestamp ASC
+		LIMIT 1
+	`;
+	db.all(query, [], callback);
+}
+
+
 function addTag(tag_id, label = null, callback) {
   db.run(`INSERT OR IGNORE INTO tags (tag_id, label) VALUES (?, ?)`, [tag_id, label], callback);
 }

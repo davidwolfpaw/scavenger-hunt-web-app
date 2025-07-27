@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="assets/css/style.css">
 	<script src="assets/js/common.js" defer></script>
 	<script src="assets/js/admin.js" defer></script>
-	<title>Admin View</title>
+	<title>Admin Dashboard</title>
 </head>
 <body>
 	<nav id="nav-bar"></nav>
@@ -17,21 +17,18 @@
 				<p>JavaScript is required to view this page properly. Please enable JavaScript in your browser settings and reload the page.</p>
 			</div>
 		</noscript>
-		<p id="status" class="loading">Loading users…</p>
+		<p id="status" class="loading">Select a view to load data...</p>
 
-		<table id="user-table" style="display:none;">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Identifier</th>
-					<th>Scan Count</th>
-					<th>Complete</th>
-				</tr>
-			</thead>
-			<tbody id="user-list">
-				<!-- User rows will be populated here -->
-			</tbody>
-		</table>
+		<div class="view-options">
+			<button id="view-by-user">View Scans by User</button>
+			<button id="view-by-clue">View Scans by Clue</button>
+			<button id="view-first-complete">View First to Complete</button>
+		</div>
+
+		<div id="view-content">
+			<!-- Content for the selected view will be loaded here -->
+		</div>
+
 		<div id="user-details-modal" class="modal">
 			<div class="modal-content">
 				<span class="close-button">&times;</span>

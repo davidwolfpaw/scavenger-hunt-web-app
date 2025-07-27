@@ -139,6 +139,22 @@ router.get('/admin/tags-with-codes', adminAuth, async (req, res) => {
   });
 });
 
+// Admin: Scans by clue
+router.get('/admin/scans-by-clue', adminAuth, (req, res) => {
+	db.getScansByClue((err, clues) => {
+		if (err) return res.status(500).json({ success: false, error: 'DB error' });
+		res.json({ success: true, clues });
+	});
+});
+
+// Admin: First to complete
+router.get('/admin/first-complete', adminAuth, (req, res) => {
+	db.getFirstComplete((err, firstComplete) => {
+		if (err) return res.status(500).json({ success: false, error: 'DB error' });
+		res.json({ success: true, firstComplete });
+	});
+});
+
 // Admin: Get scans for a specific user
 router.get('/admin/user/:identifier/scans', adminAuth, (req, res) => {
   const { identifier } = req.params;
