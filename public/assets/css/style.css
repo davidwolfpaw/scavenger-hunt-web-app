@@ -147,7 +147,6 @@ h1 {
 #nav-bar {
   color: var(--text-color);
   padding: 15px;
-  position: sticky;
   top: 10px;
   z-index: 1000;
   display: flex;
