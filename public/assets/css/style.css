@@ -107,7 +107,7 @@ h1 {
   margin: 20px auto;
   background: var(--white-color);
   border: 10px solid var(--red-color);
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   padding: 40px 30px;
   position: relative;
@@ -166,6 +166,18 @@ h1 {
   text-decoration: underline;
 }
 
+#nav-bar a.button {
+  color: var(--white-color);
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#nav-bar a.button:hover,
+#nav-bar a.button:focus {
+  background-color: var(--secondary-color);
+  text-decoration: none;
+}
+
 /* Form Styles */
 form {
   background: var(--white-color);
@@ -192,7 +204,8 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-button {
+button,
+.button {
   background-color: var(--primary-color);
   color: var(--white-color);
   padding: 10px 10px;
@@ -256,6 +269,10 @@ tr:nth-child(even) td {
 
 tr:nth-child(odd) td {
   background-color: #e6f0fa;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 
 .view-options {
