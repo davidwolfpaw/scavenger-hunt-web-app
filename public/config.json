@@ -1,48 +1,66 @@
 {
-  "scavengerHuntName": "Your Organization",
+  "scavengerHuntName": "Megaplex 2025 Scavenger Hunt",
   "defaultStampImage": "/assets/img/paw-stamp.png",
-  "totalTags": 5,
+  "totalTags": 8,
   "tagPositions": {
-    "batcave": 1,
-    "daily-planet": 2,
-    "titans-tower": 3,
-    "fortress-of-solitude": 4,
-    "hall-of-justice": 5
+    "bowie": 1,
+    "glamour": 2,
+    "lucian": 3,
+    "pounce": 4,
+    "sol": 5,
+    "trinket": 6,
+    "typhon": 7,
+    "ursula": 8
   },
   "tagStamps": {
-    "batcave": {
-      "name": "Batcave",
-      "image": "/assets/img/paw-circle.png"
+    "bowie": {
+      "name": "Bowie",
+      "image": "/assets/img/stamp-bowie.png"
     },
-    "daily-planet": {
-      "name": "Daily Planet",
-      "image": "/assets/img/paws-circle.png"
+    "glamour": {
+      "name": "Glamour",
+      "image": "/assets/img/stamp-glamour.png"
     },
-    "titans-tower": {
-      "name": "Titans Tower"
+    "lucian": {
+      "name": "Lucian",
+      "image": "/assets/img/stamp-lucian.png"
     },
-    "fortress-of-solitude": {
-      "name": "Fortress of Solitude"
+    "pounce": {
+      "name": "Pounce",
+      "image": "/assets/img/stamp-pounce.png"
     },
-    "hall-of-justice": {
-      "name": "Hall of Justice"
+    "sol": {
+      "name": "Sol",
+      "image": "/assets/img/stamp-sol.png"
+    },
+    "trinket": {
+      "name": "Trinket",
+      "image": "/assets/img/stamp-trinket.png"
+    },
+    "typhon": {
+      "name": "Typhon",
+      "image": "/assets/img/stamp-typhon.png"
+    },
+    "ursula": {
+      "name": "Ursula",
+      "image": "/assets/img/stamp-ursula.png"
     }
   },
   "badges": [
     {
-      "level": 1,
+      "level": 8,
       "name": "Beginner",
       "enabled": true,
       "image": "/assets/img/stamp-beginner.png"
     },
     {
-      "level": 3,
+      "level": 9,
       "name": "Intermediate",
       "enabled": true,
       "image": "/assets/img/stamp-intermediate.png"
     },
     {
-      "level": 5,
+      "level": 9,
       "name": "Advanced",
       "enabled": true,
       "image": "/assets/img/stamp-advanced.png"
