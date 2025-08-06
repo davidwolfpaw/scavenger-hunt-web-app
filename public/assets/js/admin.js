@@ -93,22 +93,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderClueView(clues) {
-    const list = document.createElement('ul');
-    clues.forEach(clue => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `Clue: ${clue.tag_id}, Scans: ${clue.scan_count}`;
-      list.appendChild(listItem);
-    });
-    viewContent.appendChild(list);
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Clue</th>
+          <th>Scan Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${clues.map(clue => `
+          <tr>
+            <td class="capitalize">${clue.tag_id}</td>
+            <td>${clue.scan_count}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    `;
+    viewContent.appendChild(table);
   }
 
   function renderFirstCompleteView(firstComplete) {
-    const list = document.createElement('ul');
-    firstComplete.forEach(entry => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `User: ${entry.name}, Completed at: ${new Date(entry.timestamp).toLocaleString()}`;
-      list.appendChild(listItem);
-    });
-    viewContent.appendChild(list);
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Identifier</th>
+          <th>Completed At</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${firstComplete.map(entry => `
+          <tr>
+            <td>${entry.name}</td>
+            <td>${entry.identifier}</td>
+            <td>${new Date(entry.timestamp).toLocaleString()}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    `;
+    viewContent.appendChild(table);
   }
+
 });

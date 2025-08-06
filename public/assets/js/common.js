@@ -33,8 +33,8 @@ function updateNavBar() {
   } else {
     navBar.innerHTML = `
       <div>
-        <a href="login.html#login">Login</a>
-        <a href="login.html#register">Register</a>
+        <a href="login.html#login" class="button">Login</a>
+        <a href="login.html#register" class="button">Register</a>
       </div>
     `;
   }
