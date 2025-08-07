@@ -48,19 +48,19 @@
   },
   "badges": [
     {
-      "level": 8,
+      "level": 99,
       "name": "Beginner",
       "enabled": true,
       "image": "/assets/img/stamp-beginner.png"
     },
     {
-      "level": 9,
+      "level": 99,
       "name": "Intermediate",
       "enabled": true,
       "image": "/assets/img/stamp-intermediate.png"
     },
     {
-      "level": 9,
+      "level": 99,
       "name": "Advanced",
       "enabled": true,
       "image": "/assets/img/stamp-advanced.png"
