@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewContent = document.getElementById('view-content');
 
   if (!token) {
-    status.textContent = "Admin token not found. Redirecting to login...";
-    setTimeout(() => window.location.href = 'login.html', 1000);
+    redirectToLogin("Admin token not found. Redirecting to login...");
   } else {
     document.getElementById('view-by-user').addEventListener('click', () => loadView('user'));
     document.getElementById('view-by-clue').addEventListener('click', () => loadView('clue'));
@@ -35,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
       headers: { 'x-admin-token': token }
     })
     .then(res => {
+      if (res.status === 401) {
+        throw new Error("Unauthorized - Redirecting to login");
+      }
       if (!res.ok) throw new Error("Error fetching data");
       return res.json();
     })
@@ -48,9 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     })
     .catch(err => {
-      status.textContent = err.message || "Error loading data.";
-      status.className = "error";
+      if (err.message.includes("Unauthorized")) {
+        redirectToLogin(err.message);
+      } else {
+        status.textContent = err.message || "Error loading data.";
+        status.className = "error";
+      }
     });
+  }
+
+  function redirectToLogin(message) {
+    status.textContent = message;
+    setTimeout(() => window.location.href = 'login.html', 1000);
   }
 
   function renderView(viewType, data) {
@@ -73,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <thead>
         <tr>
           <th>Name</th>
-          <th>Identifier</th>
-          <th>Scan Count</th>
-          <th>Complete</th>
+          <th>ID</th>
+          <th>Scans</th>
+          <th style="color:#fff;">✓</th>
         </tr>
       </thead>
       <tbody>
@@ -84,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${user.name}</td>
             <td>${user.identifier}</td>
             <td>${user.scan_count}</td>
-            <td>${user.hasScannedAll ? '✔️' : ''}</td>
+            <td>${user.hasScannedAll ? '✓' : ''}</td>
           </tr>
         `).join('')}
       </tbody>

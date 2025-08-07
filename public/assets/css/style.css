@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #194f90;
-  --secondary-color: #00aeef;
+  --primary-color: #313b7d;
+  --secondary-color: #00b4f1;
   --background-color: #fceec0;
   --text-color: #010101;
-  --red-color: #ff0300;
+  --red-color: #f60001;
   --white-color: #ffffff;
   --dark-green-color: #419149;
   --light-green-color: #a5d86c;
@@ -76,9 +76,8 @@ body {
   background-color: var(--background-color);
   min-height: 100vh;
   line-height: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 1.5rem;
+  font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+  font-size: 1.25rem;
 }
 
 h1,
@@ -87,9 +86,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Iowan Old Style, Apple Garamond, Baskerville, Times New Roman,
-    Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji,
-    Segoe UI Emoji, Segoe UI Symbol;
+  font-family: "Comic Sans MS", "Comic Sans", sans-serif;
   font-weight: 600;
   line-height: 1.25;
   text-wrap: balance;
@@ -102,14 +99,26 @@ h1 {
   text-align: center;
 }
 
+.screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .container {
-  max-width: 600px;
+  max-width: 480px;
   margin: 20px auto;
   background: var(--white-color);
   border: 10px solid var(--red-color);
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
-  padding: 40px 30px;
+  padding: 40px 20px;
   position: relative;
   background: repeating-linear-gradient(
     to bottom,
@@ -146,7 +155,7 @@ h1 {
 /* Header Styles */
 #nav-bar {
   color: var(--text-color);
-  padding: 15px;
+  padding: 15px 0;
   top: 10px;
   z-index: 1000;
   display: flex;
@@ -178,6 +187,12 @@ h1 {
   text-decoration: none;
 }
 
+#nav-bar a.home-link img {
+  height: 40px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
 /* Form Styles */
 form {
   background: var(--white-color);
@@ -200,7 +215,7 @@ input[type="password"] {
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 10px;
   box-sizing: border-box;
 }
 
@@ -210,13 +225,14 @@ button,
   color: var(--white-color);
   padding: 10px 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 form button {
   width: 100%;
   font-size: 1em;
+  margin-top: 20px;
 }
 
 button:hover,
@@ -231,6 +247,7 @@ button:focus {
   margin-right: 5px;
   display: inline-block;
   background-color: var(--secondary-color);
+  border-radius: 10px 10px 0 0;
 }
 .tab.active {
   background-color: var(--primary-color);

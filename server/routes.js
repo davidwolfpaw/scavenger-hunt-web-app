@@ -174,12 +174,14 @@ router.get('/admin/user/:identifier/scans', adminAuth, (req, res) => {
 // Admin: Generate token for allowed user
 function adminAuth(req, res, next) {
   const token = req.headers['x-admin-token'];
-  if (!token) return res.status(401).json({ success: false, error: 'Unauthorized - No Token'  });
+  if (!token) return res.status(401).json({ success: false, error: 'Unauthorized - No Token' });
 
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err || !decoded.isAdmin) return res.status(401).json({ success: false, error: 'Unauthorized Key' });
+    if (err || !decoded.isAdmin) {
+      return res.status(401).json({ success: false, error: 'Unauthorized Key' });
+    }
     next();
-   });
+  });
 }
 
 // Function to find username by identifier

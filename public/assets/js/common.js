@@ -6,16 +6,10 @@ function updateNavBar() {
   if (!navBar) return;
 
   if (identifier) {
-    let links = `
-      <a href="scan.html">Scan</a>
-      <a href="progress.html">Progress</a>
-    `;
+    let links = `<a href="index.html" class="home-link"><img src="assets/img/Bouscluespaw.png"><span class="screen-reader-text">Home</span></a><a href="scan.html">Scan</a><a href="progress.html">Progress</a>`;
 
     if (isAdmin) {
-      links += `
-        <a href="admin.html">Admin</a>
-        <a href="tags.html">Tags</a>
-      `;
+      links += `<a href="admin.html">Admin</a>`;
     }
 
     navBar.innerHTML = `
