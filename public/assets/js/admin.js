@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('adminToken');
   const status = document.getElementById('status');
   const viewContent = document.getElementById('view-content');
+  const userDetailsModal = document.getElementById('user-details-modal');
+  const userDetails = document.getElementById('user-details');
+  const closeButton = document.querySelector('.close-button');
 
   if (!token) {
     redirectToLogin("Admin token not found. Redirecting to login...");
@@ -91,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </thead>
       <tbody>
         ${users.map(user => `
-          <tr>
+          <tr data-identifier="${user.identifier}" data-name="${user.name}">
             <td>${user.name}</td>
             <td>${user.identifier}</td>
             <td>${user.scan_count}</td>
@@ -101,6 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
       </tbody>
     `;
     viewContent.appendChild(table);
+
+    // Add click event to each row to open modal
+    table.querySelectorAll('tbody tr').forEach(row => {
+      row.addEventListener('click', () => {
+        const identifier = row.getAttribute('data-identifier');
+        const name = row.getAttribute('data-name');
+        fetchUserScans(identifier, name);
+      });
+    });
   }
 
   function renderClueView(clues) {
@@ -136,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </thead>
       <tbody>
         ${firstComplete.map(entry => `
-          <tr>
+          <tr data-identifier="${entry.identifier}" data-name="${entry.name}">
             <td>${entry.name}</td>
             <td>${entry.identifier}</td>
             <td>${new Date(entry.timestamp).toLocaleString()}</td>
@@ -145,6 +157,65 @@ document.addEventListener('DOMContentLoaded', () => {
       </tbody>
     `;
     viewContent.appendChild(table);
+
+    // Add click event to each row to open modal
+    table.querySelectorAll('tbody tr').forEach(row => {
+      row.addEventListener('click', () => {
+        const identifier = row.getAttribute('data-identifier');
+        const name = row.getAttribute('data-name');
+        fetchUserScans(identifier, name);
+      });
+    });
   }
 
+  function fetchUserScans(identifier, name) {
+    // Clear previous details
+    userDetails.innerHTML = '';
+
+    fetch(`/admin/user/${identifier}/scans`, {
+      headers: { 'x-admin-token': token }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Error fetching user scans");
+      return res.json();
+    })
+    .then(data => {
+      if (data.success && data.scans) {
+        // Add user name and identifier above the scans
+        const userInfo = document.createElement('div');
+        userInfo.innerHTML = `<strong>User:</strong> ${name} <br><strong>Identifier:</strong> ${identifier}`;
+        userDetails.appendChild(userInfo);
+
+        if (data.scans.length === 0) {
+          const noScans = document.createElement('div');
+          noScans.textContent = "No scans found for this user.";
+          userDetails.appendChild(noScans);
+        } else {
+          const list = document.createElement('ul');
+          data.scans.forEach(scan => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `Tag: ${scan.tag_id}, Scanned at: ${new Date(scan.timestamp).toLocaleString()}`;
+            list.appendChild(listItem);
+          });
+          userDetails.appendChild(list);
+        }
+      } else {
+        userDetails.textContent = "No scans found for this user.";
+      }
+      userDetailsModal.style.display = 'block';
+    })
+    .catch(err => {
+      userDetails.textContent = err.message || "Error loading user scans.";
+    });
+  }
+
+  closeButton.addEventListener('click', () => {
+    userDetailsModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (event) => {
+    if (event.target === userDetailsModal) {
+      userDetailsModal.style.display = 'none';
+    }
+  });
 });
