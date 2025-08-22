@@ -71,16 +71,16 @@
 		}
 	}
 
-    // Check the URL hash to determine which tab to show
+	// Check the URL hash to determine which tab to show
 
-    // Update the URL hash when a tab is clicked
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('login-tab').addEventListener('click', () => {
-            window.location.hash = 'login';
-        });
-        document.getElementById('register-tab').addEventListener('click', () => {
-            window.location.hash = 'register';
-        });
+	// Update the URL hash when a tab is clicked
+	document.addEventListener('DOMContentLoaded', () => {
+		document.getElementById('login-tab').addEventListener('click', () => {
+			window.location.hash = 'login';
+		});
+		document.getElementById('register-tab').addEventListener('click', () => {
+			window.location.hash = 'register';
+		});
 
 		const hash = window.location.hash.substring(1);
 		if (hash === 'register') {
@@ -92,17 +92,17 @@
 		// Add event listeners for tab clicks
 		document.getElementById('login-tab').addEventListener('click', () => showTab('login'));
 		document.getElementById('register-tab').addEventListener('click', () => showTab('register'));
-    });
+	});
 
-    // Listen for hash changes to switch tabs
-    window.addEventListener('hashchange', () => {
-        const hash = window.location.hash.substring(1);
-        if (hash === 'register') {
-            showTab('register');
-        } else {
-            showTab('login');
-        }
-    });
+	// Listen for hash changes to switch tabs
+	window.addEventListener('hashchange', () => {
+		const hash = window.location.hash.substring(1);
+		if (hash === 'register') {
+			showTab('register');
+		} else {
+			showTab('login');
+		}
+	});
 	</script>
 </body>
 </html>

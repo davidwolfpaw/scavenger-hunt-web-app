@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const QRCode = require('qrcode');
+const crypto = require('crypto');
 const path = require('path');
 const router = express.Router();
 const db = require('./db');
@@ -88,6 +89,63 @@ router.get('/user/:identifier', (req, res) => {
   findUsernameByIdentifier(identifier, (err, name) => {
     if (err || !name) return res.status(404).json({ error: 'User not found' });
       res.json({ success: true, name });
+  });
+});
+
+// Check if a user has completed the scavenger hunt
+router.get('/user/:identifier/completion', (req, res) => {
+  const { identifier } = req.params;
+
+  db.findUserByIdentifier(identifier, (err, user) => {
+    if (err || !user) return res.status(404).json({ success: false, error: 'User not found' });
+
+    // Check if the user has completed the scavenger hunt
+    db.getUserScans(user.id, (err, scans) => {
+      if (err) return res.status(500).json({ success: false, error: 'Failed to fetch scans' });
+
+      // Assuming getAllTags returns the total number of tags
+      db.getAllTags((err, tags) => {
+        if (err) return res.status(500).json({ success: false, error: 'Failed to fetch tags' });
+
+        if (scans.length === tags.length) {
+          // User has completed the scavenger hunt
+          if (!user.completion_code) {
+            // Generate a new completion code if not already generated
+            const completionCode = generateCompletionCode();
+            db.db.run(`UPDATE users SET completion_code = ? WHERE id = ?`, [completionCode, user.id], (err) => {
+              if (err) return res.status(500).json({ success: false, error: 'Failed to update completion code' });
+
+              // Generate QR code
+              QRCode.toDataURL(completionCode, (err, qrCode) => {
+                if (err) return res.status(500).json({ success: false, error: 'Failed to generate QR code' });
+
+                res.json({ success: true, completed: true, qrCode, message: 'Congratulations! You have completed the scavenger hunt.' });
+              });
+            });
+          } else {
+            // Generate QR code from existing completion code
+            QRCode.toDataURL(user.completion_code, (err, qrCode) => {
+              if (err) return res.status(500).json({ success: false, error: 'Failed to generate QR code' });
+
+              res.json({ success: true, completed: true, qrCode, message: 'Congratulations! You have completed the scavenger hunt.' });
+            });
+          }
+        } else {
+          res.json({ success: true, completed: false, message: 'Keep going! You have not completed the scavenger hunt yet.' });
+        }
+      });
+    });
+  });
+});
+
+// Verify a completion code
+router.get('/verify-completion/:code', (req, res) => {
+  const { code } = req.params;
+
+  db.get(`SELECT * FROM users WHERE completion_code = ?`, [code], (err, user) => {
+    if (err || !user) return res.status(404).json({ success: false, error: 'Invalid or expired completion code' });
+
+    res.json({ success: true, message: 'This code verifies a completed scavenger hunt!' });
   });
 });
 
@@ -198,6 +256,11 @@ function getTotalTags(callback) {
     if (err) return callback(err);
     callback(null, tags.length);
   });
+}
+
+// Function to generate a unique completion code
+function generateCompletionCode() {
+  return crypto.randomBytes(16).toString('hex');
 }
 
 module.exports = router;

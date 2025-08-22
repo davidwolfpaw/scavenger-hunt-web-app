@@ -5,12 +5,12 @@ const fs = require('fs');
 // Ensure the database directory exists
 const databaseDir = path.resolve(__dirname, '../database');
 if (!fs.existsSync(databaseDir)) {
-    fs.mkdirSync(databaseDir, { recursive: true });
+  fs.mkdirSync(databaseDir, { recursive: true });
 }
 
 // Ensure the database file exists
 if (!fs.existsSync(path.join(databaseDir, 'scavenger-hunt.db'))) {
-    fs.writeFileSync(path.join(databaseDir, 'scavenger-hunt.db'), '');
+  fs.writeFileSync(path.join(databaseDir, 'scavenger-hunt.db'), '');
 }
 
 const dbPath = path.resolve(__dirname, '../database/scavenger-hunt.db');
@@ -31,7 +31,8 @@ function initializeDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             identifier TEXT UNIQUE NOT NULL,
-            is_admin INTEGER DEFAULT 0
+            is_admin INTEGER DEFAULT 0,
+            completion_code TEXT UNIQUE
           )
         `);
 
@@ -156,8 +157,8 @@ module.exports = {
   findUserByNameAndIdentifier,
   logScan,
   getUserScans,
-    getScansByClue,
-    getFirstComplete,
+  getScansByClue,
+  getFirstComplete,
   addTag,
   getAllTags,
   tagExists,

@@ -37,38 +37,38 @@ const tags = [
 ];
 
 const scans = [
-    // BowieBarks scanned 5 tags
-    { user_id: 'bowiebarks', tag_id: 'bowie' },
-    { user_id: 'bowiebarks', tag_id: 'glamour' },
-    { user_id: 'bowiebarks', tag_id: 'lucian' },
-    { user_id: 'bowiebarks', tag_id: 'typhon' },
-    { user_id: 'bowiebarks', tag_id: 'ursula' },
-    // Blitzen scanned 1 tag
-    { user_id: 'blitzen', tag_id: 'sol' },
-    // Tristis scanned 1 tag
-    { user_id: 'tristis', tag_id: 'sol' },
-    // Patches scanned 2 tags
-    { user_id: 'patches', tag_id: 'trinket' },
-    { user_id: 'patches', tag_id: 'typhon' },
-    // Styxx scanned 0 tags (for completeness)
-    // Fang scanned all tags
-    { user_id: 'fang', tag_id: 'bowie' },
-    { user_id: 'fang', tag_id: 'glamour' },
-    { user_id: 'fang', tag_id: 'lucian' },
-    { user_id: 'fang', tag_id: 'pounce' },
-    { user_id: 'fang', tag_id: 'sol' },
-    { user_id: 'fang', tag_id: 'trinket' },
-    { user_id: 'fang', tag_id: 'typhon' },
-    { user_id: 'fang', tag_id: 'ursula' },
-    // Artemis scanned all tags
-    { user_id: 'artemis', tag_id: 'bowie' },
-    { user_id: 'artemis', tag_id: 'glamour' },
-    { user_id: 'artemis', tag_id: 'lucian' },
-    { user_id: 'artemis', tag_id: 'pounce' },
-    { user_id: 'artemis', tag_id: 'sol' },
-    { user_id: 'artemis', tag_id: 'trinket' },
-    { user_id: 'artemis', tag_id: 'typhon' },
-    { user_id: 'artemis', tag_id: 'ursula' }
+  // BowieBarks scanned 5 tags
+  { user_id: 'bowiebarks', tag_id: 'bowie' },
+  { user_id: 'bowiebarks', tag_id: 'glamour' },
+  { user_id: 'bowiebarks', tag_id: 'lucian' },
+  { user_id: 'bowiebarks', tag_id: 'typhon' },
+  { user_id: 'bowiebarks', tag_id: 'ursula' },
+  // Blitzen scanned 1 tag
+  { user_id: 'blitzen', tag_id: 'sol' },
+  // Tristis scanned 1 tag
+  { user_id: 'tristis', tag_id: 'sol' },
+  // Patches scanned 2 tags
+  { user_id: 'patches', tag_id: 'trinket' },
+  { user_id: 'patches', tag_id: 'typhon' },
+  // Styxx scanned 0 tags (for completeness)
+  // Fang scanned all tags
+  { user_id: 'fang', tag_id: 'bowie' },
+  { user_id: 'fang', tag_id: 'glamour' },
+  { user_id: 'fang', tag_id: 'lucian' },
+  { user_id: 'fang', tag_id: 'pounce' },
+  { user_id: 'fang', tag_id: 'sol' },
+  { user_id: 'fang', tag_id: 'trinket' },
+  { user_id: 'fang', tag_id: 'typhon' },
+  { user_id: 'fang', tag_id: 'ursula' },
+  // Artemis scanned all tags
+  { user_id: 'artemis', tag_id: 'bowie' },
+  { user_id: 'artemis', tag_id: 'glamour' },
+  { user_id: 'artemis', tag_id: 'lucian' },
+  { user_id: 'artemis', tag_id: 'pounce' },
+  { user_id: 'artemis', tag_id: 'sol' },
+  { user_id: 'artemis', tag_id: 'trinket' },
+  { user_id: 'artemis', tag_id: 'typhon' },
+  { user_id: 'artemis', tag_id: 'ursula' }
 ];
 
 db.serialize(() => {
