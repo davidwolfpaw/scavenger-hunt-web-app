@@ -140,7 +140,7 @@ function getUserScanCount(){
      const query = `
       SELECT u.name, u.identifier, COUNT(s.tag_id) as scan_count
         FROM users u
-        LEFT JOIN scans s ON u.id = s.user_id
+        LEFT JOIN scans s ON u.identifier = s.user_id
         GROUP BY u.identifier, u.name
         ORDER BY u.name
     `;
