@@ -22,7 +22,6 @@ screenshots/
 
 # Logs and databases
 *.log
-*.sql
 *.sqlite
 *.db
 logs

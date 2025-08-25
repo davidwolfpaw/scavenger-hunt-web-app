@@ -20,5 +20,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+app.use((err, req, res, next)=>{
+    if(err){
+        console.error(err);
+        return res.status(500).json({message: "Internal Server error"});
+    }
+
+    next();
+})
+
 // This module exports the app for testing purposes.
 module.exports = app;
