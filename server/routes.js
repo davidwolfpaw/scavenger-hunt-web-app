@@ -186,7 +186,8 @@ router.get('/admin/tags-with-codes', adminAuth, async (req, res) => {
   db.getAllTags(async (err, tags) => {
     if (err) return res.status(500).json({ error: 'DB error' });
 
-    const baseUrl = process.env.PUBLIC_URL || 'http://localhost:3000';
+    // Ensure PUBLIC_URL is loaded from .env and fallback only if not set
+    const baseUrl = process.env.PUBLIC_URL && process.env.PUBLIC_URL.trim() !== '' ? process.env.PUBLIC_URL : 'http://localhost:3000';
     const enriched = await Promise.all(tags.map(async tag => {
       const url = `${baseUrl}/scan.html?tag=${encodeURIComponent(tag.tag_id)}`;
       const qr = await QRCode.toDataURL(url);

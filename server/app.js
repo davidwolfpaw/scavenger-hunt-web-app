@@ -1,10 +1,12 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const routes = require('./routes');
+
 require('./db');
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
