@@ -434,6 +434,20 @@ tr:nth-child(odd) td {
   align-items: center;
 }
 
+#video-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+#preview {
+  width: 100%;
+  height: auto;
+  display: block;
+  background-color: #333;
+}
+
 @media (max-width: 600px) {
   #nav-bar h1 {
     font-size: 1.2em;

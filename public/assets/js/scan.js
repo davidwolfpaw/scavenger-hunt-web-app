@@ -8,7 +8,6 @@ async function handleScanPage() {
   const msg = document.getElementById('scan-message');
   const videoContainer = document.getElementById('video-container');
   const startScanButton = document.getElementById('start-scan');
-  const nfcStatus = document.getElementById('nfc-status');
 
   if (!msg) return;
 
@@ -24,57 +23,57 @@ async function handleScanPage() {
   startScanButton.addEventListener('click', () => {
     startQrCodeScanner();
   });
-
-  // Initialize NFC scanning if supported
-  if ('NDEFReader' in window) {
-    const ndef = new NDEFReader();
-    ndef.scan().then(() => {
-      nfcStatus.textContent = "NFC reader started. Tap an NFC tag.";
-      ndef.onreading = event => {
-        const message = event.message;
-        for (const record of message.records) {
-          if (record.recordType === "text") {
-            const decoder = new TextDecoder(record.encoding);
-            const tagId = decoder.decode(record.data);
-            processTag(tagId);
-          }
-        }
-      };
-    }).catch(error => {
-      nfcStatus.textContent = `NFC scan failed: ${error.message}`;
-    });
-  } else {
-    nfcStatus.textContent = "NFC not supported on this device.";
-  }
 }
 
 function startQrCodeScanner() {
-  try {
+  console.log("Starting QR code scanner...");
+  let previewElement = document.getElementById("preview");
+  if (!previewElement) {
+    previewElement = document.createElement("div");
+    previewElement.id = "preview";
+    previewElement.style.width = "320px";
+    previewElement.style.height = "320px";
+    previewElement.style.display = "block";
+    previewElement.style.background = "#000";
+    const videoContainer = document.getElementById("video-container");
+    if (videoContainer) {
+      videoContainer.appendChild(previewElement);
+    } else {
+      document.body.appendChild(previewElement);
+    }
+  }
+
+  // Wait for the element to be rendered and have non-zero dimensions
+  setTimeout(() => {
     const html5QrCode = new Html5Qrcode("preview");
+    console.log("Html5Qrcode instance created:", html5QrCode);
+
+    const config = {
+      fps: 10,
+      qrbox: 250 // Use a fixed size or adjust as needed
+    };
+
+    console.log("Starting QR code scanning with config:", config);
+
     html5QrCode.start(
-      { facingMode: "environment" }, // Use the back camera
-      {
-        fps: 10, // frame per second for qr code scanning
-        qrbox: 250 // width of scanning box
-      },
+      { facingMode: "environment" },
+      config,
       (qrMessage) => {
-        // Handle successful scan
+        console.log("QR Code detected: ", qrMessage);
         processTag(qrMessage);
         html5QrCode.stop().then(() => {
-          // QR Code scanning is stopped.
+          console.log("QR Code scanning stopped.");
         }).catch(err => {
-          // Stop failed, handle it.
+          console.error("Failed to stop scanning:", err);
         });
       },
       (errorMessage) => {
-        // Optional callback for errors
+        console.error("QR Code scanning error:", errorMessage);
       }
     ).catch(err => {
-      // Start failed, handle it.
+      console.error("Failed to start QR Code scanner:", err);
     });
-  } catch (error) {
-    console.error("Error initializing QR code scanner:", error);
-  }
+  }, 100); // Give the browser time to render the element
 }
 
 function processTag(tagId) {
