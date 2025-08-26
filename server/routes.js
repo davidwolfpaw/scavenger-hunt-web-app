@@ -4,39 +4,57 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
-const path = require('path');
 const router = express.Router();
 const db = require('./db');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your_jwt_secret_key';
 
-// Register a new user
-router.post('/register', (req, res) => {
-  const { name, identifier } = req.body;
-  if (!name || !identifier) {
-    return res.status(400).json({ error: 'Name and identifier are required' });
-  }
-
-  db.registerUser(name, identifier, (err, userId) => {
-    if (err) {
-      return res.status(500).json({ error: 'Identifier already taken or error saving user' });
+function getHostBaseUrl(){
+    // Ensure PUBLIC_URL is loaded from .env and fallback only if not set
+    let baseUrl = process.env.PUBLIC_URL ?? '';
+    if(baseUrl.trim() === ''){
+        baseUrl = 'http://localhost';
     }
-    res.json({ success: true, userId });
-  });
+    const port = parseInt(process.env.PORT ?? "80");
+
+    if(port !== 80 && port !== 443){
+        baseUrl = `${baseUrl}:${port}`;
+    }
+
+    return baseUrl;
+}
+
+// Register a new user
+router.post('/register', async (req, res) => {
+    const { name, identifier } = req.body;
+    if (!name || !identifier) {
+        return res.status(400).json({ error: 'Name and identifier are required' });
+    }
+
+    try{
+        const user = await db.registerUser(name, identifier);
+        res.json({ success: true, userId: user });
+    }catch(e){
+
+        return res.status(500).json({ error: 'Identifier already taken or error saving user' });
+    }
+    
 });
 
 // Handle login
-router.post('/login', (req, res) => {
-  const { name, identifier } = req.body;
+router.post('/login', async (req, res) => {
+    const { name, identifier } = req.body;
 
-  if (!name || !identifier) {
-    return res.status(400).json({ success: false, error: 'Name and Identifier are required' });
-  }
-
-  db.findUserByNameAndIdentifier(name, identifier, (err, user) => {
-    if (err || !user) {
-      return res.status(404).json({ success: false, error: 'User not found' });
+    if (!name || !identifier) {
+        return res.status(400).json({ success: false, error: 'Name and Identifier are required' });
     }
+
+    const user = await db.findUserByIdentifier(identifier);
+
+    if (!user) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
 
     // Check if the user is an admin
     if (user.is_admin) {
@@ -46,222 +64,178 @@ router.post('/login', (req, res) => {
     } else {
         res.json({ success: true, isAdmin: false });
     }
-  });
 });
 
 // Log a scan
-router.post('/scan', (req, res) => {
-  const { identifier, tagId } = req.body;
+router.post('/scan', async (req, res) => {
+    try {
 
-  db.tagExists(tagId, (err, tagRow) => {
-    if (err || !tagRow) return res.status(400).json({ error: 'Unknown tag ID' });
-    if (!identifier || !tagId) return res.status(400).json({ error: 'Identifier and tagId are required' });
+        const { identifier, tagId } = req.body;
 
-    db.findUserByIdentifier(identifier, (err, user) => {
-      if (err || !user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
+        if (!identifier || !tagId)
+            return res.status(400).json({ error: 'Identifier and tagId are required' });
 
-      db.logScan(user.id, tagId, (err, added) => {
-        if (err) return res.status(500).json({ error: 'Failed to log scan' });
-          res.json({ success: true, alreadyScanned: !added });
-      });
-    });
-  });
+        const tag = await db.tagExists(tagId);
+
+        if (!tag)
+            return res.status(400).json({ error: 'Unknown tag ID' });
+
+
+        const user = await db.findUserByIdentifier(identifier);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const added = await db.logScan(user.identifier, tagId);
+
+        res.json({ success: true, alreadyScanned: !added });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Failed to log tag scan" });
+    }
 });
 
 // Get scans for a user
-router.get('/scans/:identifier', (req, res) => {
-  const { identifier } = req.params;
-  db.findUserByIdentifier(identifier, (err, user) => {
-    if (err || !user) return res.status(404).json({ error: 'User not found' });
+router.get('/scans/:identifier', async (req, res) => {
+    const { identifier } = req.params;
+    const user = await db.findUserByIdentifier(identifier);
 
-    db.getUserScans(user.id, (err, scans) => {
-      if (err) return res.status(500).json({ error: 'Failed to fetch scans' });
-      res.json({ success: true, scans });
-    });
-  });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const [scans, required] = await Promise.all([db.getUserScans(user.identifier), db.getTagsCount()])
+
+    res.json({ success: true, scans, required });
 });
 
 // Get current username by identifier
-router.get('/user/:identifier', (req, res) => {
-  const { identifier } = req.params;
-  findUsernameByIdentifier(identifier, (err, name) => {
-    if (err || !name) return res.status(404).json({ error: 'User not found' });
-      res.json({ success: true, name });
-  });
+router.get('/user/:identifier', async (req, res) => {
+    const { identifier } = req.params;
+    const user = await db.findUsernameByIdentifier(identifier);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json({ success: true, name: user.name });
 });
 
 // Check if a user has completed the scavenger hunt
-router.get('/user/:identifier/completion', (req, res) => {
-  const { identifier } = req.params;
+router.get('/user/:identifier/completion', async (req, res) => {
+    const { identifier } = req.params;
 
-  db.findUserByIdentifier(identifier, (err, user) => {
-    if (err || !user) return res.status(404).json({ success: false, error: 'User not found' });
+    const user = await db.findUserByIdentifier(identifier);
+
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
     // Check if the user has completed the scavenger hunt
-    db.getUserScans(user.id, (err, scans) => {
-      if (err) return res.status(500).json({ success: false, error: 'Failed to fetch scans' });
+    const scans = await db.getUserScans(user.identifier);
 
-      // Assuming getAllTags returns the total number of tags
-      db.getAllTags((err, tags) => {
-        if (err) return res.status(500).json({ success: false, error: 'Failed to fetch tags' });
+    // Assuming getAllTags returns the total number of tags
+    const tags = await db.getAllTags()
 
-        if (scans.length === tags.length) {
-          // User has completed the scavenger hunt
-          if (!user.completion_code) {
-            // Generate a new completion code if not already generated
-            const completionCode = generateCompletionCode();
-            db.db.run(`UPDATE users SET completion_code = ? WHERE id = ?`, [completionCode, user.id], (err) => {
-              if (err) return res.status(500).json({ success: false, error: 'Failed to update completion code' });
+    if (scans.length !== tags.length) {
+        return res.status(200).json({ success: true, completed: false, scans, name: user.name, message: 'Keep going! You have not completed the scavenger hunt yet.' });
+    }
 
-              // Generate QR code
-              QRCode.toDataURL(completionCode, (err, qrCode) => {
-                if (err) return res.status(500).json({ success: false, error: 'Failed to generate QR code' });
+    res.status(200).json({ success: true, completed: true, scans, name: user.name, message: 'Congratulations! You have completed the scavenger hunt.' });
 
-                res.json({ success: true, completed: true, qrCode, message: 'Congratulations! You have completed the scavenger hunt.' });
-              });
-            });
-          } else {
-            // Generate QR code from existing completion code
-            QRCode.toDataURL(user.completion_code, (err, qrCode) => {
-              if (err) return res.status(500).json({ success: false, error: 'Failed to generate QR code' });
-
-              res.json({ success: true, completed: true, qrCode, message: 'Congratulations! You have completed the scavenger hunt.' });
-            });
-          }
-        } else {
-          res.json({ success: true, completed: false, message: 'Keep going! You have not completed the scavenger hunt yet.' });
-        }
-      });
-    });
-  });
 });
 
 // Verify a completion code
-router.get('/verify-completion/:code', (req, res) => {
-  const { code } = req.params;
+router.get('/user/:identifier/verify', async (req, res) => {
+    const { identifier } = req.params;
 
-  db.get(`SELECT * FROM users WHERE completion_code = ?`, [code], (err, user) => {
-    if (err || !user) return res.status(404).json({ success: false, error: 'Invalid or expired completion code' });
+    const user = await db.findUsernameByIdentifier(identifier);
 
-    res.json({ success: true, message: 'This code verifies a completed scavenger hunt!' });
-  });
+    if (!user) return res.status(404).json({ success: false, error: 'User does not exist' });
+
+    
+
+    const url = `${getHostBaseUrl()}/verify.html?user=${encodeURIComponent(identifier)}`;
+    const qr = await QRCode.toDataURL(url);
+
+    res.json({ success: true, message: 'This code verifies a completed scavenger hunt!', qr });
 });
 
 // Admin: List all users
-router.get('/admin/users', adminAuth, (req, res) => {
-  const sqlite3 = require('sqlite3').verbose();
-  const dbInstance = new sqlite3.Database(path.resolve(__dirname, '../database/scavenger-hunt.db'));
+router.get('/admin/users', adminAuth, async (req, res) => {
 
-  // First get total number of tags
-  getTotalTags((err, totalTags) => {
-    if (err) return res.status(500).json({ success: false, error: 'DB error' });
+    // First get total number of tags
+    const totalTags = await db.getTagsCount();
 
     // Get users along with their scan count
-    const query = `
-      SELECT u.id, u.name, u.identifier, COUNT(s.tag_id) as scan_count
-      FROM users u
-      LEFT JOIN scans s ON u.id = s.user_id
-      GROUP BY u.id
-      ORDER BY u.name
-    `;
+    const userScans = await db.getUserScanCount();
 
-    dbInstance.all(query, [], (err, users) => {
-      if (err) return res.status(500).json({ success: false, error: 'DB error' });
-
-      // Add a marker for users who have scanned all tags
-      const usersWithMarkers = users.map(user => ({
+    // Add a marker for users who have scanned all tags
+    const usersWithMarkers = userScans.map(user => ({
         ...user,
         hasScannedAll: user.scan_count === totalTags
-      }));
+    }));
 
-      res.json({ success: true, users: usersWithMarkers });
-    });
-  });
+    res.json({ success: true, users: usersWithMarkers });
 });
 
 // Admin: Tags + QR codes
 router.get('/admin/tags-with-codes', adminAuth, async (req, res) => {
-  db.getAllTags(async (err, tags) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
+    const tags = await db.getAllTags();
 
     // Ensure PUBLIC_URL is loaded from .env and fallback only if not set
-    const baseUrl = process.env.PUBLIC_URL && process.env.PUBLIC_URL.trim() !== '' ? process.env.PUBLIC_URL : 'http://localhost:3000';
+    let baseUrl = process.env.PUBLIC_URL ?? '';
+    if(baseUrl.trim() === ''){
+        baseUrl = 'http://localhost:3000';
+    }
+
     const enriched = await Promise.all(tags.map(async tag => {
-      const url = `${baseUrl}/scan.html?tag=${encodeURIComponent(tag.tag_id)}`;
-      const qr = await QRCode.toDataURL(url);
-      return { ...tag, url, qr };
+        const url = `${getHostBaseUrl()}/scan.html?tag=${encodeURIComponent(tag.tag_id)}`;
+        const qr = await QRCode.toDataURL(url);
+        return { ...tag, url, qr };
     }));
 
     res.json({ success: true, tags: enriched });
-  });
 });
 
 // Admin: Scans by clue
-router.get('/admin/scans-by-clue', adminAuth, (req, res) => {
-  db.getScansByClue((err, clues) => {
-    if (err) return res.status(500).json({ success: false, error: 'DB error' });
+router.get('/admin/scans-by-clue', adminAuth, async (req, res) => {
+    const clues = await db.getScansByClue();
+
     res.json({ success: true, clues });
-  });
 });
 
 // Admin: First to complete
-router.get('/admin/first-complete', adminAuth, (req, res) => {
-  db.getFirstComplete((err, firstComplete) => {
-    if (err) return res.status(500).json({ success: false, error: 'DB error' });
+router.get('/admin/first-complete', adminAuth, async (req, res) => {
+    const firstComplete = await db.getFirstComplete()
+
     res.json({ success: true, firstComplete });
-  });
 });
 
 // Admin: Get scans for a specific user
-router.get('/admin/user/:identifier/scans', adminAuth, (req, res) => {
-  const { identifier } = req.params;
+router.get('/admin/user/:identifier/scans', adminAuth, async (req, res) => {
+    const { identifier } = req.params;
 
-  db.findUserByIdentifier(identifier, (err, user) => {
-    if (err || !user) return res.status(404).json({ success: false, error: 'User not found' });
+    const user = await db.findUserByIdentifier(identifier)
 
-    db.getUserScans(user.id, (err, scans) => {
-      if (err) return res.status(500).json({ success: false, error: 'Failed to fetch scans' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
-      // Assuming scans is an array of { tag_id, timestamp }
-      res.json({ success: true, scans });
-    });
-  });
+    const scans = await db.getUserScans(user.id);
+
+    res.json({ success: true, scans });
 });
 
 // Admin: Generate token for allowed user
 function adminAuth(req, res, next) {
-  const token = req.headers['x-admin-token'];
-  if (!token) return res.status(401).json({ success: false, error: 'Unauthorized - No Token' });
+    const token = req.headers['x-admin-token'];
+    if (!token) return res.status(401).json({ success: false, error: 'Unauthorized - No Token' });
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err || !decoded.isAdmin) {
-      return res.status(401).json({ success: false, error: 'Unauthorized Key' });
-    }
-    next();
-  });
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err || !decoded.isAdmin) {
+            return res.status(401).json({ success: false, error: 'Unauthorized Key' });
+        }
+        next();
+    });
 }
 
-// Function to find username by identifier
-function findUsernameByIdentifier(identifier, callback) {
-  db.findUserByIdentifier(identifier, (err, user) => {
-    if (err || !user) return callback(err || new Error('User not found'));
-    callback(null, user.name);
-  });
-}
-
-// Function to get the total number of tags
-function getTotalTags(callback) {
-  db.getAllTags((err, tags) => {
-    if (err) return callback(err);
-    callback(null, tags.length);
-  });
-}
 
 // Function to generate a unique completion code
 function generateCompletionCode() {
-  return crypto.randomBytes(16).toString('hex');
+    return crypto.randomBytes(16).toString('hex');
 }
 
 module.exports = router;

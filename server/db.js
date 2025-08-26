@@ -5,161 +5,315 @@ const fs = require('fs');
 // Ensure the database directory exists
 const databaseDir = path.resolve(__dirname, '../database');
 if (!fs.existsSync(databaseDir)) {
-  fs.mkdirSync(databaseDir, { recursive: true });
+    fs.mkdirSync(databaseDir, { recursive: true });
 }
 
 // Ensure the database file exists
 if (!fs.existsSync(path.join(databaseDir, 'scavenger-hunt.db'))) {
-  fs.writeFileSync(path.join(databaseDir, 'scavenger-hunt.db'), '');
+    fs.writeFileSync(path.join(databaseDir, 'scavenger-hunt.db'), '');
 }
 
 const dbPath = path.resolve(__dirname, '../database/scavenger-hunt.db');
 
 // Initialize the database
 function initializeDatabase() {
-  const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error opening database:', err.message);
-    } else {
-      console.log('Connected to the SQLite database.');
 
-      // Create tables if they don't exist
-      db.serialize(() => {
-        // Users table
-        db.run(`
-          CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            identifier TEXT UNIQUE NOT NULL,
-            is_admin INTEGER DEFAULT 0,
-            completion_code TEXT UNIQUE
-          )
-        `);
+    const db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('Error opening database:', err.message);
+            return;
+        }
+        console.log('Connected to the SQLite database.');
+        fs.readFile(path.join(__dirname, 'dbstate', 'initialize.sql'), (err, data) => {
+            if (err) {
+                console.error("Unable to read db initialization script");
+                return;
+            }
+            db.exec(data.toString())
+        });
+    });
 
-        // Scans table
-        db.run(`
-          CREATE TABLE IF NOT EXISTS scans (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            tag_id TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(user_id, tag_id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
-          )
-        `);
+    return db;
 
-        // Tags table
-        db.run(`
-          CREATE TABLE IF NOT EXISTS tags (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tag_id TEXT UNIQUE NOT NULL,
-            label TEXT
-          )
-        `);
-      });
-    }
-  });
-
-  return db;
 }
 
 // Initialize the database and export it
-const db = initializeDatabase();
+const db = initializeDatabase()
 
-function registerUser(name, identifier, callback) {
-  db.run(
-    `INSERT INTO users (name, identifier) VALUES (?, ?)`,
-    [name, identifier],
-    function (err) {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, this.lastID);
-    }
-  );
+/**
+ * 
+ * @param {string} name 
+ * @param {string} identifier 
+ * @returns {Promise<string>}
+ */
+function registerUser(name, identifier, is_admin=false) {
+    return new Promise((res, rej) => {
+        db.run(
+            `INSERT INTO users (name, identifier, is_admin) VALUES (?, ?, ?)`,
+            [name, identifier, is_admin ? 1 : 0],
+            function (err) {
+                if (err) {
+                    return rej(err);
+                }
+                res(identifier);
+            });
+    });
 }
 
-function findUserByIdentifier(identifier, callback) {
-  db.get(`SELECT * FROM users WHERE identifier = ?`, [identifier], (err, user) => {
-    if (err) return callback(err);
-    callback(null, user);
-  });
+/**
+ * 
+ * @param {string} identifier 
+ * @returns {Promise<{name: string}>}
+ */
+function findUsernameByIdentifier(identifier) {
+
+    return new Promise((res, rej) => {
+        db.get(`SELECT name FROM users WHERE identifier = ?`, [identifier], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
 
-function findUsernameByIdentifier(identifier, callback) {
-  db.get(`SELECT name FROM users WHERE identifier = ?`, [identifier], (err, row) => {
-    if (err) return callback(err);
-    callback(null, row ? row.name : null);
-  });
+
+/**
+ * 
+ * @param {string} identifier 
+ * @returns {Promise<{identifier: string, name: string, is_admin: boolean, completion_code: string}>}
+ */
+function findUserByIdentifier(identifier) {
+
+    return new Promise((res, rej) => {
+        db.get(
+            `SELECT * FROM users WHERE identifier = ?`,
+            [identifier], (err, data) => {
+                if (err) {
+                    return rej(err);
+                }
+                res(data);
+            });
+    });
 }
 
-function findUserByNameAndIdentifier(name, identifier, callback) {
-  db.get(
-    `SELECT * FROM users WHERE name = ? AND identifier = ?`,
-    [name, identifier],
-    (err, row) => {
-      if (err) return callback(err);
-      callback(null, row);
-    }
-  );
+/**
+ * 
+ * @param {string} userId 
+ * @param {string} tagId 
+ * @returns {Promise<boolean>}
+ */
+function logScan(userId, tagId) {
+    const stmt = db.prepare(`INSERT OR IGNORE INTO scans (user_id, tag_id) VALUES (?, ?)`);
+
+    return new Promise((res, rej) => {
+        stmt.run(userId, tagId, function (err) {
+            if (err) {
+                return rej(err);
+            }
+            res((this?.changes ?? 0) > 0)
+        });
+    });
 }
 
-function logScan(userId, tagId, callback) {
-  const stmt = db.prepare(`INSERT OR IGNORE INTO scans (user_id, tag_id) VALUES (?, ?)`);
-  stmt.run(userId, tagId, function (err) {
-    callback(err, this?.changes > 0); // true if new row added
-  });
+
+/**
+ * @param {string} userId
+ * @returns {Promise<{tag_id: string, timestamp: string}[]>}
+ */
+function getUserScans(userId) {
+    return new Promise((res, rej) => {
+        db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ?`, [userId], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
 
-function getUserScans(userId, callback) {
-  db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ?`, [userId], callback);
+/**
+ * 
+ * @returns {Promise<{name: string, identifier: string, scan_count: number}[]>}
+ */
+function getUserScanCount(){
+     const query = `
+      SELECT u.name, u.identifier, COUNT(s.tag_id) as scan_count
+        FROM users u
+        LEFT JOIN scans s ON u.identifier = s.user_id
+        GROUP BY u.identifier, u.name
+        ORDER BY u.name
+    `;
+
+    return new Promise((res, rej) => {
+        db.all(query, [], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
 
-function getScansByClue(callback) {
-  const query = `
-    SELECT tag_id, COUNT(user_id) as scan_count
-    FROM scans
-    GROUP BY tag_id
-    ORDER BY scan_count DESC
-  `;
-  db.all(query, [], callback);
+/**
+ * 
+ * @param {string} userId 
+ * @param {string} completionCode 
+ * @returns {Promise<void>}
+ */
+function setUserCompletionCode(userId, completionCode){
+    return new Promise((res, rej) => {
+        db.run(`UPDATE users SET completion_code = ? WHERE identifier = ?`, [completionCode, userId], (err) => {
+            if (err) {
+                return rej(err);
+            }
+            res();
+        });
+    });
 }
 
-function getFirstComplete(callback) {
-  const query = `
-    SELECT u.name, u.identifier, MIN(s.timestamp) as timestamp
-    FROM users u
-    JOIN scans s ON u.id = s.user_id
-    GROUP BY u.id, u.identifier
-    HAVING COUNT(s.tag_id) = (SELECT COUNT(*) FROM tags)
-    ORDER BY timestamp ASC
-  `;
-  db.all(query, [], callback);
+
+/**
+ * 
+ * @param {string} code 
+ * @returns {Promise<{identifier: string, name: string, is_admin: boolean, completion_code: string}>}
+ */
+function getUserByCode(code){
+    return new Promise((res, rej) => {
+        db.get(`SELECT * FROM users WHERE completion_code = ?`, [code], (err) => {
+            if (err) {
+                return rej(err);
+            }
+            res();
+        });
+    });
 }
 
-function addTag(tag_id, label = null, callback) {
-  db.run(`INSERT OR IGNORE INTO tags (tag_id, label) VALUES (?, ?)`, [tag_id, label], callback);
+/**
+ * 
+ * @returns {Promise<{tag_id: string, scan_count: number}>}
+ */
+function getScansByClue() {
+    const query = `
+        SELECT tag_id, COUNT(user_id) as scan_count
+        FROM scans
+        GROUP BY tag_id
+        ORDER BY scan_count DESC
+    `;
+    return new Promise((res, rej) => {
+        db.all(query, [], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
 
-function getAllTags(callback) {
-  db.all(`SELECT tag_id, label FROM tags ORDER BY tag_id`, [], callback);
+/**
+ * 
+ * @returns {Promise<{name: string, identifier: string, timestamp: string}>}
+ */
+function getFirstComplete() {
+    const query = `
+        SELECT u.name, u.identifier, MAX(s.timestamp) as timestamp
+        FROM users u
+        JOIN scans s ON u.identifier = s.user_id
+        GROUP BY u.identifier
+        HAVING COUNT(s.tag_id) = (SELECT COUNT(*) FROM tags)
+        ORDER BY timestamp ASC
+    `;
+
+    return new Promise((res, rej) => {
+        db.all(query, [], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
 
-function tagExists(tag_id, callback) {
-  db.get(`SELECT id FROM tags WHERE tag_id = ?`, [tag_id], callback);
+/**
+ * 
+ * @param {string} tag_id 
+ * @param {string} label 
+ * @returns {Promise<void>}
+ */
+function addTag(tag_id, label = null) {
+    return new Promise((res, rej) => {
+        db.run(`INSERT OR IGNORE INTO tags (tag_id, label) VALUES (?, ?)`, [tag_id, label], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
 }
+
+/**
+ * 
+ * @returns {Promise<{tag_id: string, label: string}[]>}
+ */
+function getAllTags() {
+    return new Promise((res, rej) => {
+        db.all(`SELECT tag_id, label FROM tags ORDER BY tag_id`, [], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
+}
+
+
+/**
+ * 
+ * @returns {Promise<number>}
+ */
+function getTagsCount() {
+    return new Promise((res, rej) => {
+        db.get(`SELECT count(tag_id) as count FROM tags`, [], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data.count);
+        });
+    });
+}
+
+/**
+ * 
+ * @param {string} tag_id 
+ * @returns {Promise<{tag_id: string}>}
+ */
+function tagExists(tag_id) {
+    return new Promise((res, rej) => {
+        db.get(`SELECT tag_id FROM tags WHERE tag_id = ?`, [tag_id], (err, data) => {
+            if (err) {
+                return rej(err);
+            }
+            res(data);
+        });
+    });
+}
+
+
 
 module.exports = {
-  db,
-  registerUser,
-  findUserByIdentifier,
-  findUsernameByIdentifier,
-  findUserByNameAndIdentifier,
-  logScan,
-  getUserScans,
-  getScansByClue,
-  getFirstComplete,
-  addTag,
-  getAllTags,
-  tagExists,
-};
+    db,
+    registerUser,
+    findUserByIdentifier,
+    findUsernameByIdentifier,
+    logScan,
+    getUserScans,
+    getScansByClue,
+    getFirstComplete,
+    getUserByCode,
+    setUserCompletionCode,
+    getUserScanCount,
+    addTag,
+    getAllTags,
+    tagExists,
+    getTagsCount,
+}

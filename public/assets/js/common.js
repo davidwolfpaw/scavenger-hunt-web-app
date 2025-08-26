@@ -34,22 +34,40 @@ function updateNavBar() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+class Config{
+
+    static config = undefined;
+    static pending = undefined;
+
+    static async get(){
+        if(!Config.config){
+            if(!Config.pending){
+                Config.pending = new Promise(async resolve=>{
+                    const request = await fetch('/config.json');
+                    Config.config = await request.json();
+                    resolve(this.config)
+                })
+            }
+
+            await this.pending;
+        }
+
+        return Config.config;
+    }
+}
+
+window.MegaplexScavenger = window.MegaplexScavenger || {};
+
+window.MegaplexScavenger.Config = Config;
+
+document.addEventListener('DOMContentLoaded', async () => {
   // Check if the user is logged in and update the navbar accordingly
   updateNavBar();
 
   // Fetch the config.json file and update the title
   const originalTitle = document.title.split(' - ')[0];
-  fetch('../../config.json')
-  .then(response => response.json())
-  .then(config => {
+  const config = await Config.get();
     if (config.scavengerHuntName) {
-    document.title = `${originalTitle} - ${config.scavengerHuntName}`;
+        document.title = `${originalTitle} - ${config.scavengerHuntName}`;
     }
-  })
-  .catch(() => {
-    // Fail silently if config.json is missing or invalid
-    console.error('Failed to load config.json');
-
-  });
 });

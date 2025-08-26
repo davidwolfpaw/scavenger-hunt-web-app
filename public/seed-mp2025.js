@@ -13,6 +13,7 @@ const db = new sqlite3.Database(dbPath);
 // Sample users
 const users = [
   { name: 'Omni', identifier: 'omni', is_admin: 1 },
+  { name: 'SQRL', identifier: 'sqrl3', is_admin: 1 },
   { name: 'BowieBarks', identifier: 'bowiebarks', is_admin: 1 },
   { name: 'Blitzen', identifier: 'blitzen', is_admin: 0 },
   { name: 'Patches', identifier: 'patches', is_admin: 0 },
@@ -98,23 +99,9 @@ db.serialize(() => {
     });
   }
   scans.forEach(scan => {
-    db.get(
-      `SELECT id FROM users WHERE identifier = ?`,
-      [scan.user_id],
-      (err, userRow) => {
-        if (err || !userRow) {
-          console.error('User lookup error:', err || 'User not found for scan:', scan);
-          pendingScans--;
-          if (pendingScans === 0) {
-            db.close(() => {
-              console.log('Database seed complete!');
-            });
-          }
-          return;
-        }
         db.run(
             `INSERT OR IGNORE INTO scans (user_id, tag_id) VALUES (?, ?)`,
-            [userRow.id, scan.tag_id],
+            [scan.user_id, scan.tag_id],
             err => {
             if (err) console.error('Scan insert error:', err);
             pendingScans--;
@@ -127,5 +114,4 @@ db.serialize(() => {
         );
       }
     );
-  });
 });
