@@ -9,6 +9,21 @@ const db = require('./db');
 
 const SECRET_KEY = process.env.SECRET_KEY || 'your_jwt_secret_key';
 
+function getHostBaseUrl(){
+    // Ensure PUBLIC_URL is loaded from .env and fallback only if not set
+    let baseUrl = process.env.PUBLIC_URL ?? '';
+    if(baseUrl.trim() === ''){
+        baseUrl = 'http://localhost';
+    }
+    const port = parseInt(process.env.PORT ?? "80");
+
+    if(port !== 80 && port !== 443){
+        baseUrl = `${baseUrl}:${port}`;
+    }
+
+    return baseUrl;
+}
+
 // Register a new user
 router.post('/register', async (req, res) => {
     const { name, identifier } = req.body;
@@ -88,9 +103,9 @@ router.get('/scans/:identifier', async (req, res) => {
 
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    const scans = await db.getUserScans(user.identifier);
+    const [scans, required] = await Promise.all([db.getUserScans(user.identifier), db.getTagsCount()])
 
-    res.json({ success: true, scans });
+    res.json({ success: true, scans, required });
 });
 
 // Get current username by identifier
@@ -116,35 +131,28 @@ router.get('/user/:identifier/completion', async (req, res) => {
     // Assuming getAllTags returns the total number of tags
     const tags = await db.getAllTags()
 
-    if (scans.length === tags.length) {
-        // User has completed the scavenger hunt
-        if (!user.completion_code) {
-            // Generate a new completion code if not already generated
-            const completionCode = generateCompletionCode();
-            await db.setUserCompletionCode(user.identifier, completionCode);
-
-            user.completion_code = completionCode;
-        }
-
-        // Generate QR code from existing completion code
-        const qrCode = await QRCode.toDataURL(user.completion_code)
-
-        res.json({ success: true, completed: true, qrCode, message: 'Congratulations! You have completed the scavenger hunt.' });
-
-    } else {
-        res.json({ success: true, completed: false, message: 'Keep going! You have not completed the scavenger hunt yet.' });
+    if (scans.length !== tags.length) {
+        return res.status(200).json({ success: true, completed: false, scans, name: user.name, message: 'Keep going! You have not completed the scavenger hunt yet.' });
     }
+
+    res.status(200).json({ success: true, completed: true, scans, name: user.name, message: 'Congratulations! You have completed the scavenger hunt.' });
+
 });
 
 // Verify a completion code
-router.get('/verify-completion/:code', async (req, res) => {
-    const { code } = req.params;
+router.get('/user/:identifier/verify', async (req, res) => {
+    const { identifier } = req.params;
 
-    const user = await db.getUserByCode(code);
+    const user = await db.findUsernameByIdentifier(identifier);
 
-    if (!user) return res.status(404).json({ success: false, error: 'Invalid or expired completion code' });
+    if (!user) return res.status(404).json({ success: false, error: 'User does not exist' });
 
-    res.json({ success: true, message: 'This code verifies a completed scavenger hunt!' });
+    
+
+    const url = `${getHostBaseUrl()}/verify.html?user=${encodeURIComponent(identifier)}`;
+    const qr = await QRCode.toDataURL(url);
+
+    res.json({ success: true, message: 'This code verifies a completed scavenger hunt!', qr });
 });
 
 // Admin: List all users
@@ -176,7 +184,7 @@ router.get('/admin/tags-with-codes', adminAuth, async (req, res) => {
     }
 
     const enriched = await Promise.all(tags.map(async tag => {
-        const url = `${baseUrl}/scan.html?tag=${encodeURIComponent(tag.tag_id)}`;
+        const url = `${getHostBaseUrl()}/scan.html?tag=${encodeURIComponent(tag.tag_id)}`;
         const qr = await QRCode.toDataURL(url);
         return { ...tag, url, qr };
     }));

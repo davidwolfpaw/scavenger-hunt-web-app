@@ -78,6 +78,10 @@ body {
   line-height: 2rem;
   font-family: "Comic Sans MS", "Comic Sans", sans-serif;
   font-size: 1.25rem;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
 }
 
 h1,
@@ -113,7 +117,7 @@ h1 {
 
 .container {
   max-width: 480px;
-  margin: 20px auto;
+  margin: 20px 0.5em;
   background: var(--white-color);
   border: 10px solid var(--red-color);
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
@@ -123,9 +127,9 @@ h1 {
   background: repeating-linear-gradient(
     to bottom,
     #fffaf0,
-    #fffaf0 28px,
-    #add8e6 28px,
-    #add8e6 29px
+    #fffaf0 1em,
+    #add8e6 1em,
+    #add8e6 calc(1em + 1px)
   );
 }
 
@@ -446,6 +450,36 @@ tr:nth-child(odd) td {
   height: auto;
   display: block;
   background-color: #333;
+}
+
+.scans-list{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.completion{
+    color: #FFFFFF;
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5em 2em;
+    border-radius: 0.25em 0.25em 0 0;
+}
+
+.completion.complete{
+    background-color: #419149;
+}
+
+.completion.not-complete{
+    background-color: #914148;
+}
+
+.congrats-message{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 @media (max-width: 600px) {

@@ -119,7 +119,7 @@ function logScan(userId, tagId) {
 
 /**
  * @param {string} userId
- * @returns {Promise<{tag_id: string, timestamp: string}>}
+ * @returns {Promise<{tag_id: string, timestamp: string}[]>}
  */
 function getUserScans(userId) {
     return new Promise((res, rej) => {
