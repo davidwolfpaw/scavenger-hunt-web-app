@@ -163,7 +163,7 @@ function getUserScanCount(){
  */
 function setUserCompletionCode(userId, completionCode){
     return new Promise((res, rej) => {
-        db.run(`UPDATE users SET completion_code = ? WHERE id = ?`, [completionCode, userId], (err) => {
+        db.run(`UPDATE users SET completion_code = ? WHERE identifier = ?`, [completionCode, userId], (err) => {
             if (err) {
                 return rej(err);
             }

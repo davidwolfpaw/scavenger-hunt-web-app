@@ -111,11 +111,10 @@ router.get('/user/:identifier/completion', async (req, res) => {
     if (!user) return res.status(404).json({ success: false, error: 'User not found' });
 
     // Check if the user has completed the scavenger hunt
-    const scans = await db.getUserScans(user.id);
+    const scans = await db.getUserScans(user.identifier);
 
     // Assuming getAllTags returns the total number of tags
     const tags = await db.getAllTags()
-    //if (err) return res.status(500).json({ success: false, error: 'Failed to fetch tags' });
 
     if (scans.length === tags.length) {
         // User has completed the scavenger hunt
