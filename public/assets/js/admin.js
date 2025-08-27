@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const token = sessionStorage.getItem('adminToken');
+    const user = window.MegaplexScavenger.Authentication.user;
+    const token = window.MegaplexScavenger.Authentication.token;
   const status = document.getElementById('status');
   const viewContent = document.getElementById('view-content');
   const userDetailsModal = document.getElementById('user-details-modal');
   const userDetails = document.getElementById('user-details');
   const closeButton = document.querySelector('.close-button');
 
-  if (!token) {
+  if (!user.isAdmin) {
     redirectToLogin("Admin token not found. Redirecting to login...");
   } else {
     document.getElementById('view-by-user').addEventListener('click', () => loadView('user'));
@@ -151,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr data-identifier="${entry.identifier}" data-name="${entry.name}">
             <td>${entry.name}</td>
             <td>${entry.identifier}</td>
-            <td>${new Date(entry.timestamp).toLocaleString()}</td>
+            <td>${new Date(entry.timestamp+'z').toLocaleString()}</td>
           </tr>
         `).join('')}
       </tbody>

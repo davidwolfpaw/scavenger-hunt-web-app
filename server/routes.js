@@ -43,10 +43,10 @@ router.post('/register', async (req, res) => {
 
 // Handle login
 router.post('/login', async (req, res) => {
-    const { name, identifier } = req.body;
+    const { identifier } = req.body;
 
-    if (!name || !identifier) {
-        return res.status(400).json({ success: false, error: 'Name and Identifier are required' });
+    if (!identifier) {
+        return res.status(400).json({ success: false, error: 'Identifier is required' });
     }
 
     const user = await db.findUserByIdentifier(identifier);
@@ -55,15 +55,9 @@ router.post('/login', async (req, res) => {
         return res.status(404).json({ success: false, error: 'User not found' });
     }
 
+    const token = jwt.sign({ identifier: user.identifier, isAdmin: user.is_admin, name: user.name }, SECRET_KEY, { expiresIn: '4 weeks' });
 
-    // Check if the user is an admin
-    if (user.is_admin) {
-        // Generate a token for admin
-        const token = jwt.sign({ id: user.id, isAdmin: true }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ success: true, isAdmin: true, token });
-    } else {
-        res.json({ success: true, isAdmin: false });
-    }
+    res.json({ success: true, token });
 });
 
 // Log a scan

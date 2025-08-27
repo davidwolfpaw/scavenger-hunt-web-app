@@ -28,20 +28,18 @@ if (registrationForm) {
 
       if (res.ok && data.success) {
         status.textContent = 'Registered successfully! Logging in...';
-        // Store the identifier in sessionStorage
-        sessionStorage.setItem('userIdentifier', identifier);
 
         // Automatically log in the user after successful registration
         try {
           const loginRes = await fetch('/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, identifier })
+            body: JSON.stringify({ identifier })
           });
 
           const loginData = await loginRes.json();
           if (loginRes.ok && loginData.success) {
-            handleLoginSuccess(loginData, identifier);
+            handleLoginSuccess(loginData);
           } else {
             status.textContent = 'Error logging in after registration.';
           }
@@ -60,7 +58,6 @@ if (registrationForm) {
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('login-name').value.trim();
     const identifier = document.getElementById('login-identifier').value.trim();
     const status = document.getElementById('login-status');
 
@@ -68,34 +65,33 @@ if (loginForm) {
       const res = await fetch(`/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, identifier })
+        body: JSON.stringify({ identifier })
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        // Store the identifier in sessionStorage upon successful login
-        sessionStorage.setItem('userIdentifier', identifier);
-        handleLoginSuccess(data, identifier);
+        handleLoginSuccess(data);
       } else {
         status.textContent = 'Invalid credentials';
       }
     } catch (err) {
+        console.error(err);
       status.textContent = 'Network error or server is down.';
     }
   });
 }
 
-function handleLoginSuccess(data, identifier) {
-  // Store token and identifier in sessionStorage for session management
-  sessionStorage.setItem('userToken', data.token);
-  sessionStorage.setItem('userIdentifier', identifier);
+function handleLoginSuccess(data) {
+  // Store token and identifier in localStorage for session management
+    window.MegaplexScavenger.Authentication.token = data.token;
 
-  if (data.isAdmin) {
-    sessionStorage.setItem('adminToken', data.token);
-    window.location.href = 'admin.html';
+    const user = window.MegaplexScavenger.Authentication.user;
+
+  if (user.isAdmin) {
+    window.location.assign('admin.html');
   } else {
-    processPendingScans(data.identifier);
-    window.location.href = 'progress.html';
+    processPendingScans(user.identifier);
+    window.location.assign('progress.html');
   }
 }
 
@@ -116,3 +112,9 @@ async function processPendingScans(identifier) {
     localStorage.removeItem('pendingScans');
   }
 }
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    if(window.MegaplexScavenger.Authentication.user){
+        window.location.assign('/progress.html');
+    }
+})

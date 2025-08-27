@@ -17,10 +17,9 @@ async function handleProgressPage() {
     const progressStatus = document.getElementById('progress-status');
     const container = document.querySelector('.container');
     const scanGrid = document.getElementById('scan-grid');
-    const nameEl = document.getElementById('user-name');
-    const identifier = sessionStorage.getItem('userIdentifier');
+    const user = window.MegaplexScavenger.Authentication.user;
 
-    if (!identifier) {
+    if (!user.identifier) {
         progressStatus.innerHTML = 'You are not registered. Please <a href="login.html">log in or register</a>.';
         return;
     }
@@ -32,7 +31,7 @@ async function handleProgressPage() {
     }
 
     try {
-        const res = await fetch(`/scans/${identifier}`);
+        const res = await fetch(`/scans/${user.identifier}`);
         const text = await res.text();
 
         let data;
@@ -44,19 +43,16 @@ async function handleProgressPage() {
         }
 
         if (data.success) {
-            let userName = "User";
             try {
-                const userRes = await fetch(`/user/${identifier}`);
+                const userRes = await fetch(`/user/${user.identifier}`);
                 const userData = await userRes.json();
                 if (userRes.ok && userData.success && userData.name) {
-                    userName = userData.name;
+                    user.name = userData.name;
                 }
             } catch (e) { }
 
-            nameEl.textContent = `Welcome, ${userName} (${identifier})!`;
-
             const tagWord = data.scans.length === 1 ? 'tag' : 'tags';
-            progressStatus.textContent = `You’ve found ${data.scans.length} ${tagWord}!`;
+            progressStatus.textContent = `You've found ${data.scans.length} ${tagWord}!`;
 
             const badgeInfo = getBadgeInfo(data.scans.length, config);
             if (badgeInfo.name !== "No badge yet") {
@@ -102,7 +98,7 @@ async function handleProgressPage() {
 
             // Check if the user has completed the scavenger hunt
             if(data.scans.length === data.required){
-            const completionRes = await fetch(`/user/${identifier}/verify`);
+            const completionRes = await fetch(`/user/${user.identifier}/verify`);
             const completionData = await completionRes.json();
 
             const congrats = document.createElement('div');

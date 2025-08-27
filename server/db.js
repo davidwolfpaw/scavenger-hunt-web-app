@@ -123,7 +123,7 @@ function logScan(userId, tagId) {
  */
 function getUserScans(userId) {
     return new Promise((res, rej) => {
-        db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ?`, [userId], (err, data) => {
+        db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ? AND for_date=(date('now', '-4 hours'))`, [userId], (err, data) => {
             if (err) {
                 return rej(err);
             }
@@ -137,21 +137,39 @@ function getUserScans(userId) {
  * @returns {Promise<{name: string, identifier: string, scan_count: number}[]>}
  */
 function getUserScanCount(){
-     const query = `
-      SELECT u.name, u.identifier, COUNT(s.tag_id) as scan_count
+    const query = `
+      SELECT u.identifier, COUNT(s.tag_id) as scan_count
         FROM users u
         LEFT JOIN scans s ON u.identifier = s.user_id
+        WHERE s.for_date=(date('now', '-4 hours'))
         GROUP BY u.identifier, u.name
         ORDER BY u.name
     `;
 
     return new Promise((res, rej) => {
-        db.all(query, [], (err, data) => {
-            if (err) {
-                return rej(err);
-            }
-            res(data);
-        });
+
+     
+        // Get user list
+        db.all('SELECT name, identifier FROM users', [], (err, users)=>{
+            if(err) return rej(err);
+
+
+            db.all(query, [], (err, scans) => {
+                if (err) return rej(err);
+                
+                const usersMap = users.reduce((p, c)=>{
+                    c.scan_count = 0;
+                    p[c.identifier] = c; 
+                    return p;
+                }, {});
+                scans.forEach(scan=>{
+                    usersMap[scan.identifier].scan_count = scan.scan_count;
+                })
+                res(Object.values(usersMap));
+            });
+
+        })
+
     });
 }
 
@@ -197,6 +215,7 @@ function getScansByClue() {
     const query = `
         SELECT tag_id, COUNT(user_id) as scan_count
         FROM scans
+        WHERE for_date=(date('now', '-4 hours'))
         GROUP BY tag_id
         ORDER BY scan_count DESC
     `;
@@ -219,6 +238,7 @@ function getFirstComplete() {
         SELECT u.name, u.identifier, MAX(s.timestamp) as timestamp
         FROM users u
         JOIN scans s ON u.identifier = s.user_id
+        WHERE for_date=(date('now', '-4 hours'))
         GROUP BY u.identifier
         HAVING COUNT(s.tag_id) = (SELECT COUNT(*) FROM tags)
         ORDER BY timestamp ASC
