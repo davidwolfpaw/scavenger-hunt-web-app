@@ -24,7 +24,7 @@ async function getCompletionStatus(userId){
     completion.scans = completion.scans.map((scan)=>{
         return {
             tag_id: scan.tag_id,
-            timestamp: new Date(scan.timestamp)
+            timestamp: new Date(scan.timestamp+'z')
         }
     }).sort((a,b)=>a.timestamp.getTime() - b.timestamp.getTime());
     

@@ -9,6 +9,11 @@
   --light-green-color: #a5d86c;
 }
 
+@font-face {
+  font-family: "Comic Sans Hosted"; /* Define a name for your font */
+  src: url("/assets/css/Comic Sans MS.ttf")
+}
+
 /* Box sizing rules */
 *,
 *::before,
@@ -76,7 +81,7 @@ body {
   background-color: var(--background-color);
   min-height: 100vh;
   line-height: 2rem;
-  font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Sans Hosted", sans-serif;
   font-size: 1.25rem;
   margin: 0;
   padding: 0;
@@ -90,7 +95,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Comic Sans MS", "Comic Sans", sans-serif;
+  font-family: "Comic Sans MS", "Comic Sans", "Comic Sans Hosted", sans-serif;
   font-weight: 600;
   line-height: 1.25;
   text-wrap: balance;
@@ -116,8 +121,8 @@ h1 {
 }
 
 .container {
-  max-width: 480px;
-  margin: 20px 0.5em;
+  width: min(45ch, 100vw);
+  margin: 20px 0.25em;
   background: var(--white-color);
   border: 10px solid var(--red-color);
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.2);
@@ -128,8 +133,8 @@ h1 {
     to bottom,
     #fffaf0,
     #fffaf0 1em,
-    #add8e6 1em,
-    #add8e6 calc(1em + 1px)
+    #d9ecf3 1em,
+    #d9ecf3 calc(1em + 2px)
   );
 }
 
@@ -159,17 +164,16 @@ h1 {
 /* Header Styles */
 #nav-bar {
   color: var(--text-color);
-  padding: 15px 0;
-  top: 10px;
+  padding: 0em 0 1em;
   z-index: 1000;
   display: flex;
-  gap: 15px;
+  gap: 1em;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 #nav-bar a {
-  color: var(--text-color);
+  color: var(--primary-color);
   text-decoration: none;
   padding: 20px 10px;
   font-weight: 500;
@@ -191,10 +195,32 @@ h1 {
   text-decoration: none;
 }
 
-#nav-bar a.home-link img {
-  height: 40px;
+#banner-bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: top;
+}
+#banner-bar .notebook-name{
+    font-weight: bold;
+    text-align: center;
+    flex-shrink: 1;
+}
+
+#banner-bar a.home-link {
+  flex-shrink: 0;
+}
+
+#banner-bar button {
+  height: max-content;
+  padding: 0.25em;
+}
+
+#banner-bar a.home-link img {
+  height: 2em;
   display: inline-block;
   vertical-align: bottom;
+  object-fit: contain;
 }
 
 /* Form Styles */
@@ -329,6 +355,10 @@ tr:nth-child(odd) td {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+}
+
+#progress-status{
+    margin: 0;
 }
 
 .scan-grid {
@@ -482,15 +512,9 @@ tr:nth-child(odd) td {
     width: 100%;
 }
 
-@media (max-width: 600px) {
-  #nav-bar h1 {
-    font-size: 1.2em;
-  }
-  #nav-bar {
+.centered{
+    display: flex;
     flex-direction: column;
-    gap: 5px;
-  }
-  button {
-    width: auto;
-  }
+    align-items: center;
 }
+

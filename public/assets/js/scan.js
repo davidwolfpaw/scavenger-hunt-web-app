@@ -13,10 +13,8 @@ async function handleScanPage() {
 
     // Check for URL-based scan
     const urlParams = new URLSearchParams(window.location.search);
-    const tagId = urlParams.get('tag');
-
-    if (tagId) {
-        processTag(tagId);
+    if(urlParams.has('tag')){
+        processTag(window.location.href);
     }
 
     // Start QR code scanning
@@ -27,6 +25,11 @@ async function handleScanPage() {
 
 function startQrCodeScanner() {
     console.log("Starting QR code scanner...");
+    const startScanButton = document.getElementById('start-scan');
+    
+    const msg = document.getElementById('scan-message');
+    msg.innerHTML = "";
+
     let previewElement = document.getElementById("preview");
     if (!previewElement) {
         previewElement = document.createElement("div");
@@ -42,6 +45,8 @@ function startQrCodeScanner() {
             document.body.appendChild(previewElement);
         }
     }
+    
+    startScanButton.style.display = 'none';
 
     // Wait for the element to be rendered and have non-zero dimensions
     setTimeout(() => {
@@ -62,6 +67,9 @@ function startQrCodeScanner() {
                 console.log("QR Code detected: ", qrMessage);
                 processTag(qrMessage);
                 html5QrCode.stop().then(() => {
+                    
+                    startScanButton.style.display = 'block';
+                    startScanButton.innerText = "Scan Another"
                     console.log("QR Code scanning stopped.");
                 }).catch(err => {
                     console.error("Failed to stop scanning:", err);
@@ -73,12 +81,13 @@ function startQrCodeScanner() {
         ).catch(err => {
             console.error("Failed to start QR Code scanner:", err);
         });
-    }, 100); // Give the browser time to render the element
+    }, 0); // Give the browser time to render the element
 }
 
-function processTag(scan) {
+async function processTag(scan) {
     const scanUrl = new URL(scan);
-    const identifier = sessionStorage.getItem('userIdentifier');
+    const user = window.MegaplexScavenger.Authentication.user;
+    const config = await window.MegaplexScavenger.Config.get();
     const msg = document.getElementById('scan-message');
 
     const tagId = scanUrl.searchParams.get('tag');
@@ -91,17 +100,18 @@ function processTag(scan) {
     }
 
     if (tagId) {
-        if (identifier) {
+        if (user.identifier) {
             fetch('/scan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tagId, identifier })
+                body: JSON.stringify({ tagId, identifier: user.identifier })
             }).then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        msg.textContent = data.alreadyScanned
-                            ? 'You already found this one!'
-                            : 'Tag logged successfully!';
+                        msg.innerHTML = `
+                            <span style="margin: 0.5em;">You ${data.alreadyScanned ? "already " : ""}found ${config.tagStamps[tagId].name}!</span>
+                            <img src="${config.tagStamps[tagId].image}">
+                        `;
                     } else {
                         msg.textContent = 'Scan failed: ' + (data.error || 'Unknown error');
                     }

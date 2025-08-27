@@ -12,6 +12,7 @@
 </head>
 <body>
 	<div class="container">
+		<div id="banner-bar"></div>
 		<div id="nav-bar"></div>
 		<h1>Scan A Code</h1>
 		<noscript>
@@ -19,11 +20,13 @@
 				<p>JavaScript is required to view this page properly. Please enable JavaScript in your browser settings and reload the page.</p>
 			</div>
 		</noscript>
-		<p id="scan-message">Loading...</p>
+		<div id="scan-message" class="centered"></div>
 		<div id="video-container">
 			<div id="preview" style="width: 100%; height: auto; display: block;"></div>
 		</div>
-		<button id="start-scan">Start QR Scan</button>
+        <div class="centered">
+		    <button id="start-scan">Start QR Scan</button>
+        </div>
 	</div>
 </body>
 </html>

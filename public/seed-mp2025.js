@@ -52,15 +52,15 @@ const scans = [
   { user_id: 'patches', tag_id: 'trinket' },
   { user_id: 'patches', tag_id: 'typhon' },
   // Styxx scanned 0 tags (for completeness)
-  // Fang scanned all tags
-  { user_id: 'fang', tag_id: 'bowie' },
-  { user_id: 'fang', tag_id: 'glamour' },
-  { user_id: 'fang', tag_id: 'lucian' },
-  { user_id: 'fang', tag_id: 'pounce' },
-  { user_id: 'fang', tag_id: 'sol' },
-  { user_id: 'fang', tag_id: 'trinket' },
-  { user_id: 'fang', tag_id: 'typhon' },
-  { user_id: 'fang', tag_id: 'ursula' },
+  // Fang scanned all tags yesterday
+  { user_id: 'fang', tag_id: 'bowie', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'glamour', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'lucian', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'pounce', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'sol', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'trinket', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'typhon', for_date: '2025-08-24' },
+  { user_id: 'fang', tag_id: 'ursula', for_date: '2025-08-24' },
   // Artemis scanned all tags
   { user_id: 'artemis', tag_id: 'bowie' },
   { user_id: 'artemis', tag_id: 'glamour' },
@@ -99,7 +99,22 @@ db.serialize(() => {
     });
   }
   scans.forEach(scan => {
-        db.run(
+        if(scan.for_date){
+            db.run(
+                `INSERT OR IGNORE INTO scans (user_id, tag_id, for_date) VALUES (?, ?, ?)`,
+                [scan.user_id, scan.tag_id, scan.for_date],
+                err => {
+                if (err) console.error('Scan insert error:', err);
+                pendingScans--;
+                if (pendingScans === 0) {
+                    db.close(() => {
+                    console.log('Database seed complete!');
+                    });
+                }
+                }
+            );
+        }else{
+            db.run(
             `INSERT OR IGNORE INTO scans (user_id, tag_id) VALUES (?, ?)`,
             [scan.user_id, scan.tag_id],
             err => {
@@ -112,6 +127,8 @@ db.serialize(() => {
             }
             }
         );
+        }
+        
       }
     );
 });
