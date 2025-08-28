@@ -27,49 +27,43 @@ const users = [
 
 // Sample tags
 const tags = [
-  { tag_id: 'bowie', label: 'Bowie' },
-  { tag_id: 'glamour', label: 'Glamour' },
-  { tag_id: 'lucian', label: 'Lucian' },
-  { tag_id: 'pounce', label: 'Pounce' },
-  { tag_id: 'sol', label: 'Sol' },
-  { tag_id: 'trinket', label: 'Trinket' },
-  { tag_id: 'typhon', label: 'Typhon' },
-  { tag_id: 'ursula', label: 'Ursula' }
+  { tag_id: 'vhztq3sf', label: 'Bowie' },
+  { tag_id: 'bb0aw6m4', label: 'Glamour' },
+  { tag_id: '6723jyuk', label: 'Lucian' },
+  { tag_id: 'tfws176b', label: 'Pounce' },
+  { tag_id: 'qspif7ke', label: 'Sol' },
+  { tag_id: 'ttvjpg71', label: 'Trinket' },
+  { tag_id: 'ppqj5pvo', label: 'Typhon' },
+  { tag_id: '8012057x', label: 'Ursula' },
+  { tag_id: 'qC6HIDti', label: 'Bowie - Day One' },
+  { tag_id: 'Tr4Ld74L', label: 'Glamour - Day One' },
+  { tag_id: 'Rpi1aZJT', label: 'Lucian - Day One' },
+  { tag_id: '9KujYvZJ', label: 'Pounce - Day One' },
+  { tag_id: 'ppH0F5ug', label: 'Sol - Day One' },
+  { tag_id: '4iC1YNo1', label: 'Trinket - Day One' },
+  { tag_id: '1Fodyg2c', label: 'Typhon - Day One' },
+  { tag_id: 'yIhNsKQo', label: 'Ursula - Day One' },
+  { tag_id: 'isQUCvE1', label: 'Bowie - Day Two' },
+  { tag_id: '9qxjHGsK', label: 'Glamour - Day Two' },
+  { tag_id: 'CEK0a4hn', label: 'Lucian - Day Two' },
+  { tag_id: 'PrlYOAsk', label: 'Pounce - Day Two' },
+  { tag_id: 'eTb9If07', label: 'Sol - Day Two' },
+  { tag_id: 'ZbJyTvn7', label: 'Trinket - Day Two' },
+  { tag_id: 'aUVPzkXc', label: 'Typhon - Day Two' },
+  { tag_id: 'biOdPbwq', label: 'Ursula - Day Two' },
+  { tag_id: 'IrCS0Q8b', label: 'Bowie - Day Three' },
+  { tag_id: '4dKEwI6v', label: 'Glamour - Day Three' },
+  { tag_id: '22ndKlOS', label: 'Lucian - Day Three' },
+  { tag_id: '4NdLYCGz', label: 'Pounce - Day Three' },
+  { tag_id: 'wlNNQokS', label: 'So - Day Threel' },
+  { tag_id: 'RSEugN8S', label: 'Trinket - Day Three' },
+  { tag_id: '2VND0hCW', label: 'Typhon - Day Three' },
+  { tag_id: '4rLC2YIq', label: 'Ursula - Day Three' },
+
 ];
 
 const scans = [
-  // BowieBarks scanned 5 tags
-  { user_id: 'bowiebarks', tag_id: 'bowie' },
-  { user_id: 'bowiebarks', tag_id: 'glamour' },
-  { user_id: 'bowiebarks', tag_id: 'lucian' },
-  { user_id: 'bowiebarks', tag_id: 'typhon' },
-  { user_id: 'bowiebarks', tag_id: 'ursula' },
-  // Blitzen scanned 1 tag
-  { user_id: 'blitzen', tag_id: 'sol' },
-  // Tristis scanned 1 tag
-  { user_id: 'tristis', tag_id: 'sol' },
-  // Patches scanned 2 tags
-  { user_id: 'patches', tag_id: 'trinket' },
-  { user_id: 'patches', tag_id: 'typhon' },
-  // Styxx scanned 0 tags (for completeness)
-  // Fang scanned all tags yesterday
-  { user_id: 'fang', tag_id: 'bowie', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'glamour', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'lucian', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'pounce', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'sol', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'trinket', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'typhon', for_date: '2025-08-24' },
-  { user_id: 'fang', tag_id: 'ursula', for_date: '2025-08-24' },
-  // Artemis scanned all tags
-  { user_id: 'artemis', tag_id: 'bowie' },
-  { user_id: 'artemis', tag_id: 'glamour' },
-  { user_id: 'artemis', tag_id: 'lucian' },
-  { user_id: 'artemis', tag_id: 'pounce' },
-  { user_id: 'artemis', tag_id: 'sol' },
-  { user_id: 'artemis', tag_id: 'trinket' },
-  { user_id: 'artemis', tag_id: 'typhon' },
-  { user_id: 'artemis', tag_id: 'ursula' }
+  // { user_id: 'fang', tag_id: 'bowie', for_date: '2025-08-24' },
 ];
 
 db.serialize(() => {
@@ -128,7 +122,7 @@ db.serialize(() => {
             }
         );
         }
-        
+
       }
     );
 });
