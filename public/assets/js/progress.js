@@ -104,7 +104,7 @@ async function handleProgressPage() {
             const congrats = document.createElement('div');
             congrats.classList.add('congrats-message')
             const congratsMessage = document.createElement('p');
-            congratsMessage.textContent = "Congratulations on completing the scavenger hunt! Present this code to Gaming to claim your prize!";
+            congratsMessage.textContent = "You found all 8 clues today, well done! Head to Con Ops and show them this screen to claim your prize!";
             congratsMessage.style.fontWeight = 'bold';
             congratsMessage.style.color = 'green';
             congratsMessage.style.textAlign = 'center';
