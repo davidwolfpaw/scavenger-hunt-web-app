@@ -63,7 +63,6 @@ const tags = [
 ];
 
 const scans = [
-  // { user_id: 'fang', tag_id: 'bowie', for_date: '2025-08-24' },
 ];
 
 db.serialize(() => {
