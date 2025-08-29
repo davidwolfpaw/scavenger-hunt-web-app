@@ -17,9 +17,9 @@ function getHostBaseUrl(){
     }
     const port = parseInt(process.env.PORT ?? "80");
 
-    if(port !== 80 && port !== 443){
-        baseUrl = `${baseUrl}:${port}`;
-    }
+    // if(port !== 80 && port !== 443){
+    //     baseUrl = `${baseUrl}:${port}`;
+    // }
 
     return baseUrl;
 }
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
 
         return res.status(500).json({ error: 'Identifier already taken or error saving user' });
     }
-    
+
 });
 
 // Handle login
@@ -141,7 +141,7 @@ router.get('/user/:identifier/verify', async (req, res) => {
 
     if (!user) return res.status(404).json({ success: false, error: 'User does not exist' });
 
-    
+
 
     const url = `${getHostBaseUrl()}/verify.html?user=${encodeURIComponent(identifier)}`;
     const qr = await QRCode.toDataURL(url);

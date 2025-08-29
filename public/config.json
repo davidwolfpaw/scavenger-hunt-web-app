@@ -3,45 +3,45 @@
   "defaultStampImage": "/assets/img/paw-stamp.png",
   "totalTags": 8,
   "tagPositions": {
-    "bowie": 1,
-    "glamour": 2,
-    "lucian": 3,
-    "pounce": 4,
-    "sol": 5,
-    "trinket": 6,
-    "typhon": 7,
-    "ursula": 8
+    "vhztq3sf": 1,
+    "bb0aw6m4": 2,
+    "6723jyuk": 3,
+    "tfws176b": 4,
+    "qspif7ke": 5,
+    "ttvjpg71": 6,
+    "ppqj5pvo": 7,
+    "8012057x": 8
   },
   "tagStamps": {
-    "bowie": {
+    "vhztq3sf": {
       "name": "Bowie",
       "image": "/assets/img/stamp-bowie.png"
     },
-    "glamour": {
+    "bb0aw6m4": {
       "name": "Glamour",
       "image": "/assets/img/stamp-glamour.png"
     },
-    "lucian": {
+    "6723jyuk": {
       "name": "Lucian",
       "image": "/assets/img/stamp-lucian.png"
     },
-    "pounce": {
+    "tfws176b": {
       "name": "Pounce",
       "image": "/assets/img/stamp-pounce.png"
     },
-    "sol": {
+    "qspif7ke": {
       "name": "Sol",
       "image": "/assets/img/stamp-sol.png"
     },
-    "trinket": {
+    "ttvjpg71": {
       "name": "Trinket",
       "image": "/assets/img/stamp-trinket.png"
     },
-    "typhon": {
+    "ppqj5pvo": {
       "name": "Typhon",
       "image": "/assets/img/stamp-typhon.png"
     },
-    "ursula": {
+    "8012057x": {
       "name": "Ursula",
       "image": "/assets/img/stamp-ursula.png"
     }
