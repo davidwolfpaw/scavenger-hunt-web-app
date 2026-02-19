@@ -1,6 +1,4 @@
 # Project Specific ignores
-reports/
-screenshots/
 
 # compiled source
 *.com
