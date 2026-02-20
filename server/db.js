@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const { getEventDate } = require('./config');
 
 const dbPath = process.env.DB_PATH || path.resolve(__dirname, '../database/scavenger-hunt.db');
 
@@ -108,10 +109,10 @@ function findUserByIdentifier(identifier) {
  * @returns {Promise<boolean>}
  */
 function logScan(userId, tagId) {
-    const stmt = db.prepare(`INSERT OR IGNORE INTO scans (user_id, tag_id) VALUES (?, ?)`);
+    const stmt = db.prepare(`INSERT OR IGNORE INTO scans (user_id, tag_id, for_date) VALUES (?, ?, ?)`);
 
     return new Promise((res, rej) => {
-        stmt.run(userId, tagId, function (err) {
+        stmt.run(userId, tagId, getEventDate(), function (err) {
             if (err) {
                 return rej(err);
             }
@@ -127,7 +128,7 @@ function logScan(userId, tagId) {
  */
 function getUserScans(userId) {
     return new Promise((res, rej) => {
-        db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ? AND for_date=(date('now', '-4 hours'))`, [userId], (err, data) => {
+        db.all(`SELECT tag_id, timestamp FROM scans WHERE user_id = ? AND for_date=?`, [userId, getEventDate()], (err, data) => {
             if (err) {
                 return rej(err);
             }
@@ -145,7 +146,7 @@ function getUserScanCount(){
       SELECT u.identifier, COUNT(s.tag_id) as scan_count
         FROM users u
         LEFT JOIN scans s ON u.identifier = s.user_id
-        WHERE s.for_date=(date('now', '-4 hours'))
+        WHERE s.for_date=?
         GROUP BY u.identifier, u.name
         ORDER BY u.name
     `;
@@ -158,7 +159,7 @@ function getUserScanCount(){
             if(err) return rej(err);
 
 
-            db.all(query, [], (err, scans) => {
+            db.all(query, [getEventDate()], (err, scans) => {
                 if (err) return rej(err);
 
                 const usersMap = users.reduce((p, c)=>{
@@ -219,12 +220,12 @@ function getScansByClue() {
     const query = `
         SELECT tag_id, COUNT(user_id) as scan_count
         FROM scans
-        WHERE for_date=(date('now', '-4 hours'))
+        WHERE for_date=?
         GROUP BY tag_id
         ORDER BY scan_count DESC
     `;
     return new Promise((res, rej) => {
-        db.all(query, [], (err, data) => {
+        db.all(query, [getEventDate()], (err, data) => {
             if (err) {
                 return rej(err);
             }
@@ -242,14 +243,14 @@ function getFirstComplete() {
         SELECT u.name, u.identifier, MAX(s.timestamp) as timestamp
         FROM users u
         JOIN scans s ON u.identifier = s.user_id
-        WHERE for_date=(date('now', '-4 hours'))
+        WHERE for_date=?
         GROUP BY u.identifier
         HAVING COUNT(s.tag_id) = (SELECT COUNT(*) FROM tags)
         ORDER BY timestamp ASC
     `;
 
     return new Promise((res, rej) => {
-        db.all(query, [], (err, data) => {
+        db.all(query, [getEventDate()], (err, data) => {
             if (err) {
                 return rej(err);
             }

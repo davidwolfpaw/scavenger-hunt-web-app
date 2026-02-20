@@ -1,4 +1,5 @@
 {
+  "timezone": "America/New_York",
   "scavengerHuntName": "Your Organization",
   "defaultStampImage": "/assets/img/stamp-paw.png",
   "totalTags": 8,
