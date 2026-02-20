@@ -1,31 +1,49 @@
 {
   "scavengerHuntName": "Your Organization",
-  "defaultStampImage": "/assets/img/paw-stamp.png",
-  "totalTags": 5,
+  "defaultStampImage": "/assets/img/stamp-paw.png",
+  "totalTags": 8,
   "tagPositions": {
-    "batcave": 1,
-    "daily-planet": 2,
-    "titans-tower": 3,
-    "fortress-of-solitude": 4,
-    "hall-of-justice": 5
+    "bb0aw6m4": 1,
+    "ppqj5pvo": 2,
+    "6723jyuk": 3,
+    "8012057x": 4,
+    "tfws176b": 5,
+    "qspif7ke": 6,
+    "ttvjpg71": 7,
+    "vhztq3sf": 8
   },
   "tagStamps": {
-    "batcave": {
-      "name": "Batcave",
-      "image": "/assets/img/paw-circle.png"
+    "bb0aw6m4": {
+      "name": "Ballroom",
+      "image": "/assets/img/stamp-ballroom.png"
     },
-    "daily-planet": {
-      "name": "Daily Planet",
-      "image": "/assets/img/paws-circle.png"
+    "ppqj5pvo": {
+      "name": "Hall",
+      "image": "/assets/img/stamp-hall.png"
     },
-    "titans-tower": {
-      "name": "Titans Tower"
+    "6723jyuk": {
+      "name": "Conservatory",
+      "image": "/assets/img/stamp-conservatory.png"
     },
-    "fortress-of-solitude": {
-      "name": "Fortress of Solitude"
+    "8012057x": {
+      "name": "Lounge",
+      "image": "/assets/img/stamp-lounge.png"
     },
-    "hall-of-justice": {
-      "name": "Hall of Justice"
+    "tfws176b": {
+      "name": "Billiard Room",
+      "image": "/assets/img/stamp-billiard.png"
+    },
+    "qspif7ke": {
+      "name": "Library",
+      "image": "/assets/img/stamp-library.png"
+    },
+    "ttvjpg71": {
+      "name": "Study",
+      "image": "/assets/img/stamp-study.png"
+    },
+    "vhztq3sf": {
+      "name": "Kitchen",
+      "image": "/assets/img/stamp-kitchen.png"
     }
   },
   "badges": [
@@ -42,7 +60,7 @@
       "image": "/assets/img/stamp-intermediate.png"
     },
     {
-      "level": 5,
+      "level": 8,
       "name": "Advanced",
       "enabled": true,
       "image": "/assets/img/stamp-advanced.png"

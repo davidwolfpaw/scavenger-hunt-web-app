@@ -26,14 +26,14 @@ const users = [
 
 // Sample tags
 const tags = [
-  { tag_id: "vhztq3sf", label: "Kitchen" },
   { tag_id: "bb0aw6m4", label: "Ballroom" },
-  { tag_id: "6723jyuk", label: "Conservatory" },
   { tag_id: "tfws176b", label: "Billiard Room" },
-  { tag_id: "qspif7ke", label: "Library" },
-  { tag_id: "ttvjpg71", label: "Study" },
+  { tag_id: "6723jyuk", label: "Conservatory" },
   { tag_id: "ppqj5pvo", label: "Hall" },
+  { tag_id: "vhztq3sf", label: "Kitchen" },
+  { tag_id: "qspif7ke", label: "Library" },
   { tag_id: "8012057x", label: "Lounge" },
+  { tag_id: "ttvjpg71", label: "Study" },
 ];
 
 // Scans use the identifier as user_id and the tag's tag_id.
