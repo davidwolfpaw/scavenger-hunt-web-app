@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
     { expiresIn: "4 weeks" },
   );
 
-  res.json({ success: true, token });
+  res.json({ success: true, token, isAdmin: user.is_admin, identifier: user.identifier });
 });
 
 // Log a scan
