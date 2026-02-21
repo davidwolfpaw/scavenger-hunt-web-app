@@ -42,14 +42,15 @@ function seedTagsFromConfig(database) {
       database.run(
         `INSERT OR IGNORE INTO tags (tag_id, label) VALUES (?, ?)`,
         [tag.tag_id, tag.label],
-        (err) => {
+        function (err) {
           if (err) {
-            console.error(
-              `Error seeding tag ${tag.tag_id}:`,
-              err.message,
-            );
-          } else {
+            console.error(`Error seeding tag ${tag.tag_id}:`, err.message);
+          } else if (this.changes > 0) {
             console.log(`Seeded tag: ${tag.tag_id} (${tag.label})`);
+          } else {
+            console.log(
+              `Tag already exists, skipping: ${tag.tag_id} (${tag.label})`,
+            );
           }
           completed++;
           if (completed === total) {
