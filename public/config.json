@@ -1,7 +1,7 @@
 {
   "timezone": "America/New_York",
   "scavengerHuntName": "Your Organization",
-  "theme": "default",
+  "theme": "simple",
   "strings": {
     "nav": {
       "scan": "Scan",
