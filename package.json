@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
+    "stop": "pkill -f 'server/server.js' || true",
 	"test": "mocha"
   },
   "keywords": [
