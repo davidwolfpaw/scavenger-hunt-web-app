@@ -6,6 +6,22 @@ window.appConfigPromise = fetch("config.json")
     return {};
   });
 
+// Apply theme as soon as config resolves, before DOMContentLoaded, to minimise flash
+window.appConfigPromise.then((config) => {
+  const theme = config.theme || "default";
+  if (theme === "default") return;
+
+  const link = document.getElementById("theme-stylesheet");
+  if (!link) return;
+
+  link.onerror = () => {
+    console.warn(`Theme "${theme}" not found — falling back to default.`);
+    link.href = "assets/css/default.css";
+    link.onerror = null;
+  };
+  link.href = `assets/css/${theme}.css`;
+});
+
 // Replace {placeholder} tokens in a string
 window.formatString = function (template, replacements) {
   return template.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "");

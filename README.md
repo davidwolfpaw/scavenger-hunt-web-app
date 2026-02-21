@@ -99,6 +99,7 @@ This file controls the name, stamps, and badge levels for your hunt.
 | `tagStamps` | Yes | An object keyed by tag identifier. Each entry can have a `name` (displayed label) and an `image` (path to a custom stamp image). |
 | `badges` | No | An array of achievement levels. Each badge has a `level` (number of tags needed), a `name`, an `enabled` flag, and an `image`. |
 | `strings` | No | An object of UI text strings, organized by page/section. Allows customizing all user-facing text without editing source files. See [UI Strings](#5-ui-strings-publicconfigjson) below. |
+| `theme` | No | Name of the CSS theme file to load from `public/assets/css/`. Defaults to `"default"` (`default.css`). If the named file is not found, falls back to `default.css`. |
 | `timezone` | No | IANA timezone string (e.g. `"America/New_York"`). Used to determine the current event date when recording and querying scans. Defaults to `America/New_York`. |
 
 Example `tagStamps` entry:
@@ -123,6 +124,33 @@ Replace any of the default images with your own. All paths are relative to the `
 | `stamp-advanced.png` | Badge image for the Advanced level |
 
 Images can be any web-friendly format (PNG, SVG, WebP, etc.) as long as the paths in `config.json` match.
+
+### 4. Themes (`public/assets/css/`)
+
+The app supports CSS themes selectable via `config.json`. Set the `theme` field to the name of any `.css` file in `public/assets/css/` (without the `.css` extension):
+
+```json
+"theme": "dark"
+```
+
+This loads `public/assets/css/dark.css`. If the file does not exist, the app automatically falls back to `default.css`.
+
+**Creating a custom theme:**
+
+1. Copy `public/assets/css/default.css` to a new file, e.g. `public/assets/css/mytheme.css`
+2. Edit the CSS variables at the top of the file, or override any rules you want to change
+3. Set `"theme": "mytheme"` in `config.json`
+
+The built-in CSS variables you can override in a theme:
+
+```css
+:root {
+  --primary-color: #194f90;
+  --secondary-color: #00aeef;
+  --background-color: #fceec0;
+  --text-color: #010101;
+}
+```
 
 ### 5. UI Strings (`public/config.json`)
 
