@@ -1,21 +1,21 @@
-const express = require('express');
-const path = require('path');
-const routes = require('./routes');
-require('./db');
+const express = require("express");
+const path = require("path");
+const routes = require("./routes");
+require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // API routes (no prefix)
 app.use(routes);
 
 // Fallback: redirect all other requests to index.html
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // This module exports the app for testing purposes.

@@ -1,6 +1,88 @@
 {
   "timezone": "America/New_York",
   "scavengerHuntName": "Your Organization",
+  "strings": {
+    "nav": {
+      "scan": "Scan",
+      "progress": "Progress",
+      "admin": "Admin",
+      "tags": "Tags",
+      "logout": "Logout",
+      "login": "Login",
+      "register": "Register"
+    },
+    "index": {
+      "heading": "Welcome to the Scavenger Hunt!",
+      "intro": "Join our exciting scavenger hunt where you can scan QR codes or NFC tags to track your progress and earn badges!"
+    },
+    "login": {
+      "heading": "Scavenger Hunt Portal",
+      "loginTab": "Login",
+      "registerTab": "Register",
+      "loginHeading": "Login",
+      "nameLabel": "Your Name:",
+      "identifierLabel": "Unique Identifier:",
+      "loginButton": "Login",
+      "registerHeading": "Register",
+      "registerButton": "Register",
+      "successRegistered": "Registered successfully! Logging in...",
+      "errorLoginAfterRegister": "Error logging in after registration.",
+      "errorNetwork": "Network error or server is down.",
+      "errorInvalidCredentials": "Invalid credentials",
+      "errorInvalidResponse": "Error: Invalid server response"
+    },
+    "progress": {
+      "heading": "Your Progress",
+      "loading": "Loading...",
+      "notRegistered": "You are not registered. Please <a href=\"login.html\">log in or register</a>.",
+      "errorConfig": "Failed to load configuration.",
+      "errorInvalidResponse": "Error: Invalid server response",
+      "welcome": "Welcome, {name} ({identifier})!",
+      "foundSingular": "You've found 1 tag!",
+      "foundPlural": "You've found {count} tags!",
+      "yourBadge": "Your Badge: {badge}",
+      "noBadge": "No badge yet",
+      "errorLoading": "Error loading progress: {error}",
+      "errorNetwork": "Network error or server is down."
+    },
+    "scan": {
+      "heading": "Scan A Code",
+      "loading": "Loading...",
+      "startScan": "Start QR Scan",
+      "nfcStarted": "NFC reader started. Tap an NFC tag.",
+      "nfcFailed": "NFC scan failed: {error}",
+      "nfcNotSupported": "NFC not supported on this device.",
+      "alreadyScanned": "You already found this one!",
+      "scanSuccess": "Tag logged successfully!",
+      "scanFailed": "Scan failed: {error}",
+      "errorNetwork": "Network or server error during scan.",
+      "tagSaved": "Tag saved! Please log in or register to save your progress.",
+      "noTag": "No tag provided."
+    },
+    "admin": {
+      "heading": "Admin Dashboard",
+      "selectView": "Select a view to load data...",
+      "viewByUser": "Scans by User",
+      "viewByClue": "Scans by Clue",
+      "viewFirstComplete": "First to Complete",
+      "loading": "Loading...",
+      "errorNoToken": "Admin token not found. Redirecting to login...",
+      "errorFetch": "Error fetching data",
+      "errorFailedToLoad": "Failed to load data.",
+      "colName": "Name",
+      "colIdentifier": "Identifier",
+      "colScanCount": "Scan Count",
+      "colComplete": "Complete",
+      "colClue": "Clue",
+      "colCompletedAt": "Completed At",
+      "completeCheckmark": "✔️"
+    },
+    "tags": {
+      "heading": "Printable QR Tags",
+      "loading": "Loading...",
+      "downloadQR": "Download QR"
+    }
+  },
   "defaultStampImage": "/assets/img/stamp-paw.png",
   "totalTags": 8,
   "tagPositions": {

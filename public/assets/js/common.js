@@ -1,20 +1,43 @@
-function updateNavBar() {
-  const navBar = document.getElementById('nav-bar');
-  const identifier = sessionStorage.getItem('userToken');
-  const isAdmin = !!sessionStorage.getItem('adminToken');
+// Fetch config once and expose as a shared promise for all page scripts
+window.appConfigPromise = fetch("config.json")
+  .then((r) => r.json())
+  .catch(() => {
+    console.error("Failed to load config.json");
+    return {};
+  });
+
+// Replace {placeholder} tokens in a string
+window.formatString = function (template, replacements) {
+  return template.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "");
+};
+
+function applyStrings(config) {
+  const strings = config.strings || {};
+  document.querySelectorAll("[data-string-key]").forEach((el) => {
+    const key = el.getAttribute("data-string-key");
+    const val = key.split(".").reduce((obj, part) => obj?.[part], strings);
+    if (val) el.textContent = val;
+  });
+}
+
+function updateNavBar(config) {
+  const nav = config?.strings?.nav || {};
+  const navBar = document.getElementById("nav-bar");
+  const identifier = sessionStorage.getItem("userToken");
+  const isAdmin = !!sessionStorage.getItem("adminToken");
 
   if (!navBar) return;
 
   if (identifier) {
     let links = `
-      <a href="scan.html">Scan</a>
-      <a href="progress.html">Progress</a>
+      <a href="scan.html">${nav.scan || "Scan"}</a>
+      <a href="progress.html">${nav.progress || "Progress"}</a>
     `;
 
     if (isAdmin) {
       links += `
-        <a href="admin.html">Admin</a>
-        <a href="tags.html">Tags</a>
+        <a href="admin.html">${nav.admin || "Admin"}</a>
+        <a href="tags.html">${nav.tags || "Tags"}</a>
       `;
     }
 
@@ -22,40 +45,32 @@ function updateNavBar() {
       <div>
         ${links}
       </div>
-      <button id="logout-btn">Logout</button>
+      <button id="logout-btn">${nav.logout || "Logout"}</button>
     `;
 
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      sessionStorage.removeItem('userToken');
-      sessionStorage.removeItem('adminToken');
-      window.location.href = 'index.html';
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      sessionStorage.removeItem("userToken");
+      sessionStorage.removeItem("adminToken");
+      window.location.href = "index.html";
     });
   } else {
     navBar.innerHTML = `
       <div>
-        <a href="login.html#login" class="button">Login</a>
-        <a href="login.html#register" class="button">Register</a>
+        <a href="login.html#login" class="button">${nav.login || "Login"}</a>
+        <a href="login.html#register" class="button">${nav.register || "Register"}</a>
       </div>
     `;
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Check if the user is logged in and update the navbar accordingly
-  updateNavBar();
+document.addEventListener("DOMContentLoaded", async () => {
+  const config = await window.appConfigPromise;
 
-  // Fetch the config.json file and update the title
-  const originalTitle = document.title.split(' - ')[0];
-  fetch('../../config.json')
-  .then(response => response.json())
-  .then(config => {
-    if (config.scavengerHuntName) {
+  updateNavBar(config);
+  applyStrings(config);
+
+  if (config.scavengerHuntName) {
+    const originalTitle = document.title.split(" - ")[0];
     document.title = `${originalTitle} - ${config.scavengerHuntName}`;
-    }
-  })
-  .catch(() => {
-    // Fail silently if config.json is missing or invalid
-    console.error('Failed to load config.json');
-
-  });
+  }
 });

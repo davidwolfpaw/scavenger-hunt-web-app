@@ -50,9 +50,10 @@ The app will automatically create all tables and seed tags from your config when
 To get your scavenger hunt up and running:
 
 1. ✅ **Configure Hunt Details** — Edit `public/config.json`:
-   - Update `scavengerHuntName`
+   - Update `scavengerHuntName` and `timezone`
    - Define your `tagStamps` with IDs and names
    - Set badge `level` thresholds if desired
+   - Optionally customize any UI labels via the `strings` section
 
 2. ✅ **Set Environment Variables** — Edit `.env`:
    - Set `PUBLIC_URL` (used for QR code generation)
@@ -97,6 +98,8 @@ This file controls the name, stamps, and badge levels for your hunt.
 | `tagPositions` | No | Maps each tag identifier to a display position, so stamps appear in a fixed order rather than scan order. |
 | `tagStamps` | Yes | An object keyed by tag identifier. Each entry can have a `name` (displayed label) and an `image` (path to a custom stamp image). |
 | `badges` | No | An array of achievement levels. Each badge has a `level` (number of tags needed), a `name`, an `enabled` flag, and an `image`. |
+| `strings` | No | An object of UI text strings, organized by page/section. Allows customizing all user-facing text without editing source files. See [UI Strings](#5-ui-strings-publicconfigjson) below. |
+| `timezone` | No | IANA timezone string (e.g. `"America/New_York"`). Used to determine the current event date when recording and querying scans. Defaults to `America/New_York`. |
 
 Example `tagStamps` entry:
 
@@ -120,6 +123,108 @@ Replace any of the default images with your own. All paths are relative to the `
 | `stamp-advanced.png` | Badge image for the Advanced level |
 
 Images can be any web-friendly format (PNG, SVG, WebP, etc.) as long as the paths in `config.json` match.
+
+### 5. UI Strings (`public/config.json`)
+
+All user-facing text in the app is configurable via the `strings` object in `config.json`. This lets you rename labels, reword messages, or translate the interface without touching any source files.
+
+Strings are organized by section. Any key you omit will fall back to the built-in default. Only include the keys you want to change.
+
+```json
+"strings": {
+  "nav": {
+    "scan": "Scan",
+    "progress": "Progress",
+    "admin": "Admin",
+    "tags": "Tags",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register"
+  },
+  "index": {
+    "heading": "Welcome to the Scavenger Hunt!",
+    "intro": "Join our exciting scavenger hunt..."
+  },
+  "login": {
+    "heading": "Scavenger Hunt Portal",
+    "loginTab": "Login",
+    "registerTab": "Register",
+    "loginHeading": "Login",
+    "nameLabel": "Your Name:",
+    "identifierLabel": "Unique Identifier:",
+    "loginButton": "Login",
+    "registerHeading": "Register",
+    "registerButton": "Register",
+    "successRegistered": "Registered successfully! Logging in...",
+    "errorLoginAfterRegister": "Error logging in after registration.",
+    "errorNetwork": "Network error or server is down.",
+    "errorInvalidCredentials": "Invalid credentials",
+    "errorInvalidResponse": "Error: Invalid server response"
+  },
+  "progress": {
+    "heading": "Your Progress",
+    "loading": "Loading...",
+    "notRegistered": "You are not registered. Please <a href=\"login.html\">log in or register</a>.",
+    "errorConfig": "Failed to load configuration.",
+    "errorInvalidResponse": "Error: Invalid server response",
+    "welcome": "Welcome, {name} ({identifier})!",
+    "foundSingular": "You've found 1 tag!",
+    "foundPlural": "You've found {count} tags!",
+    "yourBadge": "Your Badge: {badge}",
+    "noBadge": "No badge yet",
+    "errorLoading": "Error loading progress: {error}",
+    "errorNetwork": "Network error or server is down."
+  },
+  "scan": {
+    "heading": "Scan A Code",
+    "loading": "Loading...",
+    "startScan": "Start QR Scan",
+    "nfcStarted": "NFC reader started. Tap an NFC tag.",
+    "nfcFailed": "NFC scan failed: {error}",
+    "nfcNotSupported": "NFC not supported on this device.",
+    "alreadyScanned": "You already found this one!",
+    "scanSuccess": "Tag logged successfully!",
+    "scanFailed": "Scan failed: {error}",
+    "errorNetwork": "Network or server error during scan.",
+    "tagSaved": "Tag saved! Please log in or register to save your progress.",
+    "noTag": "No tag provided."
+  },
+  "admin": {
+    "heading": "Admin Dashboard",
+    "selectView": "Select a view to load data...",
+    "viewByUser": "Scans by User",
+    "viewByClue": "Scans by Clue",
+    "viewFirstComplete": "First to Complete",
+    "loading": "Loading...",
+    "errorNoToken": "Admin token not found. Redirecting to login...",
+    "errorFetch": "Error fetching data",
+    "errorFailedToLoad": "Failed to load data.",
+    "colName": "Name",
+    "colIdentifier": "Identifier",
+    "colScanCount": "Scan Count",
+    "colComplete": "Complete",
+    "colClue": "Clue",
+    "colCompletedAt": "Completed At",
+    "completeCheckmark": "✔️"
+  },
+  "tags": {
+    "heading": "Printable QR Tags",
+    "loading": "Loading...",
+    "downloadQR": "Download QR"
+  }
+}
+```
+
+Several strings support `{placeholder}` tokens that are filled in at runtime:
+
+| String key | Available tokens |
+|---|---|
+| `progress.welcome` | `{name}`, `{identifier}` |
+| `progress.foundPlural` | `{count}` |
+| `progress.yourBadge` | `{badge}` |
+| `progress.errorLoading` | `{error}` |
+| `scan.nfcFailed` | `{error}` |
+| `scan.scanFailed` | `{error}` |
 
 ### 4. Tags (Auto-Seeded from Config)
 

@@ -11,41 +11,41 @@
 <body>
 	<div class="container">
 		<div id="nav-bar"></div>
-		<h1>Scavenger Hunt Portal</h1>
+		<h1 data-string-key="login.heading">Scavenger Hunt Portal</h1>
 		<noscript>
 			<div class="noscript-message">
 				<p>JavaScript is required to view this page properly. Please enable JavaScript in your browser settings and reload the page.</p>
 			</div>
 		</noscript>
 		<div>
-			<span id="login-tab" class="tab active">Login</span>
-			<span id="register-tab" class="tab">Register</span>
+			<span id="login-tab" class="tab active" data-string-key="login.loginTab">Login</span>
+			<span id="register-tab" class="tab" data-string-key="login.registerTab">Register</span>
 		</div>
 
 		<div id="login-form-container" class="form-container active">
 			<form id="login-form">
-				<h2>Login</h2>
-				<label for="login-name">Your Name:</label>
+				<h2 data-string-key="login.loginHeading">Login</h2>
+				<label for="login-name" data-string-key="login.nameLabel">Your Name:</label>
 				<input type="text" id="login-name" name="name" required />
 
-				<label for="login-identifier">Unique Identifier:</label>
+				<label for="login-identifier" data-string-key="login.identifierLabel">Unique Identifier:</label>
 				<input type="text" id="login-identifier" name="identifier" required />
 
-				<button type="submit">Login</button>
+				<button type="submit" data-string-key="login.loginButton">Login</button>
 			</form>
 			<p id="login-status"></p>
 		</div>
 
 		<div id="register-form-container" class="form-container">
 			<form id="registration-form">
-				<h2>Register</h2>
-				<label for="register-name">Your Name:</label>
+				<h2 data-string-key="login.registerHeading">Register</h2>
+				<label for="register-name" data-string-key="login.nameLabel">Your Name:</label>
 				<input type="text" id="register-name" name="name" required>
 
-				<label for="register-identifier">Unique Identifier:</label>
+				<label for="register-identifier" data-string-key="login.identifierLabel">Unique Identifier:</label>
 				<input type="text" id="register-identifier" name="identifier" required>
 
-				<button type="submit">Register</button>
+				<button type="submit" data-string-key="login.registerButton">Register</button>
 			</form>
 			<p id="register-status"></p>
 		</div>
