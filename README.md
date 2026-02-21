@@ -41,11 +41,41 @@ cp .env.example .env
 npm start
 ```
 
+The app will automatically create all tables and seed tags from your config when it starts.
+
 ---
 
-## Customization
+## Admin Setup Checklist
 
-There are four main things to customize before running your hunt:
+To get your scavenger hunt up and running:
+
+1. ✅ **Configure Hunt Details** — Edit `public/config.json`:
+   - Update `scavengerHuntName`
+   - Define your `tagStamps` with IDs and names
+   - Set badge `level` thresholds if desired
+
+2. ✅ **Set Environment Variables** — Edit `.env`:
+   - Set `PUBLIC_URL` (used for QR code generation)
+   - Set `SECRET_KEY` (for JWT tokens)
+
+3. ✅ **Start the App** — Run `npm start`
+   - Database tables and tags are created automatically
+   - No manual tag setup needed if `public/config.json` is setup
+
+4. ✅ **Create an Admin User** — Register at `/login.html` with a test identifier
+   - After registering, manually set `is_admin = 1` in the database to grant admin access
+   - Or add it programmatically in a seed script
+
+5. ✅ **Access Admin Panel** — Log in as admin and go to `/admin.html`
+   - View all users and their progress
+   - Download QR codes for each tag
+   - Monitor first-to-complete and leaderboard stats
+
+---
+
+## Setup & Customization
+
+Before running your hunt, customize these three main areas. Tags are automatically seeded from your config when the app starts.
 
 ### 1. Environment Variables (`.env`)
 
@@ -91,18 +121,24 @@ Replace any of the default images with your own. All paths are relative to the `
 
 Images can be any web-friendly format (PNG, SVG, WebP, etc.) as long as the paths in `config.json` match.
 
-### 4. Tags (Admin Panel)
+### 4. Tags (Auto-Seeded from Config)
 
-Tags are created through the admin panel at `/admin.html` when logged in as an admin user. Each tag gets a unique ID that is embedded in its QR code or URL. The admin panel also lets you download QR codes ready to print.
+Tags are automatically created from the `tagStamps` configuration in `public/config.json` when the app starts. The app will skip any tags that already exist in the database, so you can safely restart the app without duplicating tags.
+
+To add or modify tags:
+1. Edit the `tagStamps` object in `public/config.json`
+2. Restart the app — new tags will be automatically seeded into the database
+
+The admin panel at `/admin.html` (when logged in as an admin) displays all tags and lets you download their QR codes ready to print.
 
 ---
 
 ## Test Data
 
-`public/seed-test.js` populates the database with sample users, tags, and scans for local testing. It is safe to run in development and should not be used in production.
+`scripts/seed-test-data.js` populates the database with sample users, tags, and scans for local testing. It is safe to run in development and should not be used in production.
 
 ```bash
-node public/seed-test.js
+node scripts/seed-test-data.js
 ```
 
 The seed script creates 10 users (2 admin, 8 regular) and 8 tags with varying scan coverage, so you can see the leaderboard and completion views with realistic data.

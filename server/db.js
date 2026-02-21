@@ -1,7 +1,7 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const fs = require("fs");
-const { getEventDate } = require("./config");
+const { getEventDate, config } = require("./config");
 
 const dbPath =
   process.env.DB_PATH ||
@@ -22,6 +22,45 @@ const dbReady = new Promise((resolve) => {
   resolveReady = resolve;
 });
 
+// Seed tags from config.json
+function seedTagsFromConfig(database) {
+  if (!config.tagStamps || Object.keys(config.tagStamps).length === 0) {
+    console.log("No tags found in config.json - skipping tag seeding.");
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    const tags = Object.entries(config.tagStamps).map(([tagId, tagData]) => ({
+      tag_id: tagId,
+      label: tagData.name || tagId,
+    }));
+
+    let completed = 0;
+    const total = tags.length;
+
+    tags.forEach((tag) => {
+      database.run(
+        `INSERT OR IGNORE INTO tags (tag_id, label) VALUES (?, ?)`,
+        [tag.tag_id, tag.label],
+        (err) => {
+          if (err) {
+            console.error(
+              `Error seeding tag ${tag.tag_id}:`,
+              err.message,
+            );
+          } else {
+            console.log(`Seeded tag: ${tag.tag_id} (${tag.label})`);
+          }
+          completed++;
+          if (completed === total) {
+            resolve();
+          }
+        },
+      );
+    });
+  });
+}
+
 // Initialize the database
 function initializeDatabase() {
   const db = new sqlite3.Database(dbPath, (err) => {
@@ -39,7 +78,10 @@ function initializeDatabase() {
           resolveReady();
           return;
         }
-        db.exec(data.toString(), () => resolveReady());
+        db.exec(data.toString(), async () => {
+          await seedTagsFromConfig(db);
+          resolveReady();
+        });
       },
     );
   });
