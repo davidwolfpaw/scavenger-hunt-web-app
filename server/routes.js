@@ -43,18 +43,20 @@ router.post("/register", async (req, res) => {
 
 // Handle login
 router.post("/login", async (req, res) => {
-  const { identifier } = req.body;
+  const { name, identifier } = req.body;
 
-  if (!identifier) {
+  if (!name || !identifier) {
     return res
       .status(400)
-      .json({ success: false, error: "Identifier is required" });
+      .json({ success: false, error: "Name and identifier are required" });
   }
 
   const user = await db.findUserByIdentifier(identifier);
 
-  if (!user) {
-    return res.status(404).json({ success: false, error: "User not found" });
+  if (!user || user.name.toLowerCase() !== name.toLowerCase()) {
+    return res
+      .status(401)
+      .json({ success: false, error: "Invalid credentials" });
   }
 
   const token = jwt.sign(
@@ -63,7 +65,12 @@ router.post("/login", async (req, res) => {
     { expiresIn: "4 weeks" },
   );
 
-  res.json({ success: true, token, isAdmin: user.is_admin, identifier: user.identifier });
+  res.json({
+    success: true,
+    token,
+    isAdmin: user.is_admin,
+    identifier: user.identifier,
+  });
 });
 
 // Log a scan
@@ -135,26 +142,22 @@ router.get("/user/:identifier/completion", async (req, res) => {
   const tags = await db.getAllTags();
 
   if (scans.length !== tags.length) {
-    return res
-      .status(200)
-      .json({
-        success: true,
-        completed: false,
-        scans,
-        name: user.name,
-        message: "Keep going! You have not completed the scavenger hunt yet.",
-      });
-  }
-
-  res
-    .status(200)
-    .json({
+    return res.status(200).json({
       success: true,
-      completed: true,
+      completed: false,
       scans,
       name: user.name,
-      message: "Congratulations! You have completed the scavenger hunt.",
+      message: "Keep going! You have not completed the scavenger hunt yet.",
     });
+  }
+
+  res.status(200).json({
+    success: true,
+    completed: true,
+    scans,
+    name: user.name,
+    message: "Congratulations! You have completed the scavenger hunt.",
+  });
 });
 
 // Verify a completion code
